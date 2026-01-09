@@ -13,7 +13,7 @@ import { useAppTheme } from '../contexts/ThemeContext';
 const { Header, Sider, Content } = Layout;
 
 const MainLayout: React.FC = () => {
-    const { backgroundImage } = useAppTheme();
+    const { backgroundImage, contentOpacity } = useAppTheme();
     const [collapsed, setCollapsed] = useState(false);
     const {
         token: { borderRadiusLG },
@@ -92,6 +92,7 @@ const MainLayout: React.FC = () => {
                         margin: '24px 16px',
                         padding: 24,
                         minHeight: 280,
+                        backgroundColor: backgroundImage ? `rgba(255, 255, 255, ${contentOpacity})` : undefined,
                         borderRadius: borderRadiusLG,
                         transition: 'all 0.3s ease',
                         border: backgroundImage ? `1px solid rgba(255, 255, 255, 0.1)` : 'none',
