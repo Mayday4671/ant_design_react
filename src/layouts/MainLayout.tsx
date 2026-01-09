@@ -13,10 +13,10 @@ import { useAppTheme } from '../contexts/ThemeContext';
 const { Header, Sider, Content } = Layout;
 
 const MainLayout: React.FC = () => {
-    const { backgroundImage, contentOpacity } = useAppTheme();
+    const { backgroundImage } = useAppTheme();
     const [collapsed, setCollapsed] = useState(false);
     const {
-        token: { colorBgContainer, borderRadiusLG },
+        token: { borderRadiusLG },
     } = theme.useToken();
     const navigate = useNavigate();
     const location = useLocation();
@@ -37,7 +37,7 @@ const MainLayout: React.FC = () => {
                 collapsed={collapsed}
                 theme="light"
                 style={{
-                    backgroundColor: `rgba(255, 255, 255, ${backgroundImage ? 0.8 : 1})`,
+                    borderRight: backgroundImage ? '1px solid rgba(255, 255, 255, 0.1)' : undefined,
                 }}
             >
                 <div style={{ padding: '16px', textAlign: 'center' }}>
@@ -72,10 +72,9 @@ const MainLayout: React.FC = () => {
             <Layout style={{ background: 'transparent' }}>
                 <Header style={{
                     padding: 0,
-                    background: `rgba(255, 255, 255, ${backgroundImage ? 0.8 : 1})`,
                     display: 'flex',
                     alignItems: 'center',
-                    backdropFilter: backgroundImage ? 'blur(8px)' : 'none'
+                    borderBottom: backgroundImage ? '1px solid rgba(255, 255, 255, 0.1)' : undefined,
                 }}>
                     <Button
                         type="text"
@@ -93,13 +92,9 @@ const MainLayout: React.FC = () => {
                         margin: '24px 16px',
                         padding: 24,
                         minHeight: 280,
-                        background: colorBgContainer, // Keeping original variable but might need rgba if we want transparency on card itself.
-                        // Actually colorBgContainer comes from token. 
-                        // Let's override background with opacity if set.
-                        backgroundColor: `rgba(255, 255, 255, ${contentOpacity})`,
                         borderRadius: borderRadiusLG,
-                        backdropFilter: backgroundImage ? 'blur(4px)' : 'none',
-                        transition: 'all 0.3s ease'
+                        transition: 'all 0.3s ease',
+                        border: backgroundImage ? `1px solid rgba(255, 255, 255, 0.1)` : 'none',
                     }}
                 >
                     <Outlet />
