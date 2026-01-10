@@ -1,7 +1,15 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { theme } from 'antd';
 import type { ThemeConfig } from 'antd';
+
+// Storage keys
+const STORAGE_KEYS = {
+    PRIMARY_COLOR: 'app_primary_color',
+    BG_IMAGE: 'app_bg_image',
+    CONTENT_OPACITY: 'app_content_opacity',
+    DARK_MODE: 'app_dark_mode',
+};
 
 interface ThemeContextType {
     primaryColor: string;
@@ -30,31 +38,62 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-    const [primaryColor, setPrimaryColor] = useState('#1677ff');
-    const [backgroundImage, setBackgroundImage] = useState('');
-    const [contentOpacity, setContentOpacity] = useState(0.9);
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    // Initialize from localStorage or defaults
+    const [primaryColor, setPrimaryColor] = useState(() =>
+        localStorage.getItem(STORAGE_KEYS.PRIMARY_COLOR) || '#1677ff'
+    );
+    const [backgroundImage, setBackgroundImage] = useState(() =>
+        localStorage.getItem(STORAGE_KEYS.BG_IMAGE) || ''
+    );
+    const [contentOpacity, setContentOpacity] = useState(() =>
+        Number(localStorage.getItem(STORAGE_KEYS.CONTENT_OPACITY)) || 0.9
+    );
+    const [isDarkMode, setIsDarkMode] = useState(() =>
+        localStorage.getItem(STORAGE_KEYS.DARK_MODE) === 'true'
+    );
+
+    // Persist changes to localStorage
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEYS.PRIMARY_COLOR, primaryColor);
+    }, [primaryColor]);
+
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEYS.BG_IMAGE, backgroundImage);
+    }, [backgroundImage]);
+
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEYS.CONTENT_OPACITY, contentOpacity.toString());
+    }, [contentOpacity]);
+
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEYS.DARK_MODE, isDarkMode.toString());
+    }, [isDarkMode]);
 
     const antdTheme: ThemeConfig = {
         token: {
             colorPrimary: primaryColor,
             colorBgContainer: backgroundImage
                 ? `rgba(${isDarkMode ? '30, 30, 30' : '255, 255, 255'}, ${contentOpacity})`
-                : undefined,
+                : (isDarkMode ? '#141414' : '#ffffff'),
             colorBgElevated: backgroundImage
                 ? `rgba(${isDarkMode ? '45, 45, 45' : '255, 255, 255'}, ${Math.min(contentOpacity + 0.1, 1)})`
-                : undefined,
+                : (isDarkMode ? '#1f1f1f' : '#ffffff'),
         },
         algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
         components: {
             Layout: {
                 colorBgHeader: backgroundImage
                     ? `rgba(${isDarkMode ? '20, 20, 20' : '255, 255, 255'}, ${contentOpacity})`
-                    : undefined,
+                    : (isDarkMode ? '#001529' : '#ffffff'),
                 colorBgBody: 'transparent',
             },
             Menu: {
-                colorBgContainer: 'transparent',
+                colorBgContainer: backgroundImage ? 'transparent' : undefined,
+            },
+            Table: {
+                headerBg: backgroundImage
+                    ? `rgba(${isDarkMode ? '40, 40, 40' : '250, 250, 250'}, ${contentOpacity})`
+                    : (isDarkMode ? '#1d1d1d' : '#fafafa'),
             }
         }
     };
