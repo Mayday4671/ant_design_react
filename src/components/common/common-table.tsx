@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Button, Space, Card, Input } from 'antd';
 import type { TableProps } from 'antd';
 import { PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
-import { useAppTheme } from '../../contexts/ThemeContext';
+import { useAppTheme } from '../../contexts/theme-context';
 
 interface CommonTableProps<T> extends Omit<TableProps<T>, 'title'> {
     headerTitle?: string;
@@ -22,9 +22,9 @@ const CommonTable = <T extends object>({
     extraActions,
     ...tableProps
 }: CommonTableProps<T>) => {
-    const { backgroundImage } = useAppTheme();
+    const { adminBackgroundImage } = useAppTheme();
     return (
-        <Card bordered={backgroundImage ? true : false} styles={{ body: { padding: 0 } }} style={{ background: 'transparent' }}>
+        <Card bordered={adminBackgroundImage ? true : false} styles={{ body: { padding: 0 } }} style={{ background: 'transparent' }}>
             {(headerTitle || onAdd || onSearch || onRefresh || extraActions) && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, padding: '16px 24px 0' }}>
                     {headerTitle && <h2 style={{ margin: 0, fontSize: '1.2rem' }}>{headerTitle}</h2>}

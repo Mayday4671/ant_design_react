@@ -3,12 +3,12 @@ import { Tag, Space, Button, Form, message, Popconfirm } from 'antd';
 import type { TablePaginationConfig } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getUsers, updateUser, createUser, deleteUser } from '../services/mock';
-import type { User } from '../services/mock';
-import CommonTable from '../components/Common/CommonTable';
-import CommonModal from '../components/Common/CommonModal';
-import CommonForm from '../components/Common/CommonForm';
-import type { FormField } from '../components/Common/CommonForm';
+import { getUsers, updateUser, createUser, deleteUser } from '../../../services/mock';
+import type { User } from '../../../services/mock';
+import CommonTable from '../../../components/common/common-table';
+import CommonModal from '../../../components/common/common-modal';
+import CommonForm from '../../../components/common/common-form';
+import type { FormField } from '../../../components/common/common-form';
 
 /**
  * React vs Vue Note:
