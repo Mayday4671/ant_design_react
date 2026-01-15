@@ -3,10 +3,11 @@ import { Routes, Route } from 'react-router-dom';
 
 // Layouts
 import AdminLayout from '../layouts/admin-layout';
-import FrontendLayout from '../layouts/frontend-layout';
+import AIToolsLayout from '../layouts/ai-tools-layout';
 
-// Frontend Pages
-import { Home, About, Articles, ArticleDetail } from '../pages/frontend';
+// Frontend Pages - AI Tools Home
+import AIToolsHome from '../pages/frontend/ai-tools-home';
+import { About, Articles, ArticleDetail } from '../pages/frontend';
 
 // Admin Pages
 import { Dashboard, UserList, Settings, ArticleManage, GPTChat } from '../pages/admin';
@@ -14,9 +15,9 @@ import { Dashboard, UserList, Settings, ArticleManage, GPTChat } from '../pages/
 const AppRouter: React.FC = () => {
     return (
         <Routes>
-            {/* 前台展示路由 */}
-            <Route path="/" element={<FrontendLayout />}>
-                <Route index element={<Home />} />
+            {/* 前台 AI 工具导航路由 */}
+            <Route path="/" element={<AIToolsLayout />}>
+                <Route index element={<AIToolsHome />} />
                 <Route path="about" element={<About />} />
                 <Route path="articles" element={<Articles />} />
                 <Route path="article/:id" element={<ArticleDetail />} />

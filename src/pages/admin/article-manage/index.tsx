@@ -8,6 +8,7 @@ import {
     FileTextOutlined, CheckCircleOutlined, ClockCircleOutlined, HeartOutlined
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import MDEditor from '@uiw/react-md-editor';
 import {
     getArticles, createArticle, updateArticle, deleteArticle, getCategories, getArticleStats,
     type Article, type Category
@@ -26,6 +27,7 @@ const ArticleManage: React.FC = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingArticle, setEditingArticle] = useState<Article | null>(null);
     const [stats, setStats] = useState<{ total: number; published: number; draft: number; totalViews: number; totalLikes: number } | null>(null);
+    const [markdownContent, setMarkdownContent] = useState<string>('');
     const [form] = Form.useForm();
 
     // 获取统计数据
@@ -65,12 +67,14 @@ const ArticleManage: React.FC = () => {
     const handleOpenModal = (article?: Article) => {
         if (article) {
             setEditingArticle(article);
+            setMarkdownContent(article.content || '');
             form.setFieldsValue({
                 ...article,
                 tags: article.tags.join(', '),
             });
         } else {
             setEditingArticle(null);
+            setMarkdownContent('');
             form.resetFields();
         }
         setModalOpen(true);
@@ -82,6 +86,7 @@ const ArticleManage: React.FC = () => {
             const values = await form.validateFields();
             const articleData = {
                 ...values,
+                content: markdownContent,
                 tags: values.tags ? values.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
                 author: editingArticle?.author || {
                     id: 'author_admin',
@@ -89,7 +94,7 @@ const ArticleManage: React.FC = () => {
                     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
                 },
                 slug: values.title.toLowerCase().replace(/\s+/g, '-'),
-                readTime: Math.ceil(values.content.length / 500),
+                readTime: Math.ceil(markdownContent.length / 500),
             };
 
             if (editingArticle) {
@@ -360,10 +365,17 @@ const ArticleManage: React.FC = () => {
 
                     <Form.Item
                         name="content"
-                        label="文章内容"
-                        rules={[{ required: true, message: '请输入文章内容' }]}
+                        label="文章内容（Markdown）"
+                        rules={[{ required: true, message: '请输入文章内容', validator: () => markdownContent ? Promise.resolve() : Promise.reject('请输入文章内容') }]}
                     >
-                        <TextArea rows={8} placeholder="请输入文章内容（支持 Markdown 格式）" />
+                        <div data-color-mode="light">
+                            <MDEditor
+                                value={markdownContent}
+                                onChange={(val) => setMarkdownContent(val || '')}
+                                height={350}
+                                preview="live"
+                            />
+                        </div>
                     </Form.Item>
 
                     <Row gutter={16}>

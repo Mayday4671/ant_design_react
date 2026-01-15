@@ -1,0 +1,258 @@
+/* ================================================
+   AI Tools Home Page Styles
+   Replicating ai-bot.cn design
+   ================================================ */
+
+/* ========== Container ========== */
+.ai-tools-home {
+    min-height: 100%;
+}
+
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+/* ========== Category Section ========== */
+/* ========== Category Section ========== */
+.category-section,
+.featured-section {
+    margin-bottom: 32px;
+    scroll-margin-top: 80px;
+    padding: 24px;
+    border-radius: 12px;
+    transition: background 0.3s;
+}
+
+/* Light Mode Styles */
+.light-mode .category-section,
+.light-mode .featured-section {
+    background: #ffffff;
+}
+
+.light-mode .category-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Dark Mode Styles */
+.dark-mode .category-section,
+.dark-mode .featured-section {
+    background: transparent;
+}
+
+.dark-mode .category-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+}
+
+/* Light mode border */
+:root:not(.dark) .category-header {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+.category-icon {
+    font-size: 20px;
+    color: #1890ff;
+}
+
+.category-title {
+    margin: 0 !important;
+    font-size: 18px !important;
+}
+
+.category-count {
+    background: rgba(24, 144, 255, 0.1);
+    border: none;
+    color: #1890ff;
+    font-size: 12px;
+}
+
+.view-more {
+    color: #1890ff;
+    font-size: 13px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.view-more:hover {
+    opacity: 1;
+}
+
+/* ========== Tool Card ========== */
+.tool-card-link {
+    display: block;
+    text-decoration: none;
+}
+
+.tool-card {
+    height: 100%;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.light-mode .tool-card {
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+}
+
+.dark-mode .tool-card {
+    background: #1f1f1f;
+    border: 1px solid #303030;
+}
+
+.tool-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: transparent;
+}
+
+.dark-mode .tool-card:hover {
+    background: #2a2a2a;
+    border-color: #1890ff;
+}
+
+.tool-card .ant-card-body {
+    padding: 12px;
+}
+
+.tool-card-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+}
+
+.tool-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.tool-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.tool-title-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.tool-name {
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+.tool-badge {
+    font-size: 10px;
+    padding: 0 4px;
+    line-height: 14px;
+    height: 14px;
+    border: none;
+}
+
+.tool-description {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0 !important;
+    opacity: 0.65;
+}
+
+.tool-link-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    color: #1890ff;
+}
+
+.tool-card:hover .tool-link-icon {
+    opacity: 1;
+}
+
+/* ========== Animations ========== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.category-section,
+.featured-section {
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.featured-section:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.featured-section:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.category-section:nth-of-type(1) {
+    animation-delay: 0.2s;
+}
+
+.category-section:nth-of-type(2) {
+    animation-delay: 0.25s;
+}
+
+.category-section:nth-of-type(3) {
+    animation-delay: 0.3s;
+}
+
+.category-section:nth-of-type(4) {
+    animation-delay: 0.35s;
+}
+
+.category-section:nth-of-type(5) {
+    animation-delay: 0.4s;
+}
+
+.category-section:nth-of-type(6) {
+    animation-delay: 0.45s;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+    .category-header {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tool-card .ant-card-body {
+        padding: 10px;
+    }
+
+    .tool-icon-wrapper {
+        width: 40px;
+        height: 40px;
+    }
+}
