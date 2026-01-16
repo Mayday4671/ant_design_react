@@ -205,12 +205,16 @@ const AIToolsLayout: React.FC = () => {
                                     <div
                                         key={link.key}
                                         className={`top-nav-item ${location.pathname === link.key ? 'active' : ''}`}
+<<<<<<< HEAD
                                         onClick={() => {
                                             navigate(link.key);
                                             if (link.key === '/') {
                                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                             }
                                         }}
+=======
+                                        onClick={() => navigate(link.key)}
+>>>>>>> 73c9424a9f473d418977bbe26df819448537a1ef
                                     >
                                         {index === 0 && <RocketOutlined className="nav-item-icon" />}
                                         {index === 1 && <FireOutlined className="nav-item-icon" />}

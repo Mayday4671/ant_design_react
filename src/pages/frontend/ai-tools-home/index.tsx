@@ -355,16 +355,27 @@ const AIToolsHome: React.FC = () => {
             ))}
 
             {/* 浮动按钮组 */}
+<<<<<<< HEAD
             <FloatButton.Group shape="circle" style={{ right: 3, bottom: 40 }}>
                 <Tooltip title="AI 智能对话" placement="left">
                     <FloatButton
                         icon={<RobotOutlined />}
                         className="ai-chat-button"
+=======
+            <FloatButton.Group shape="circle" style={{ right: 40, bottom: 40 }}>
+                <Tooltip title="AI 智能对话" placement="left">
+                    <FloatButton
+                        icon={<RobotOutlined />}
+>>>>>>> 73c9424a9f473d418977bbe26df819448537a1ef
                         type="primary"
                         onClick={() => navigate('/ai-chat')}
                     />
                 </Tooltip>
+<<<<<<< HEAD
                 <FloatButton.BackTop visibilityHeight={300} className="ai-backtop-button" />
+=======
+                <FloatButton.BackTop visibilityHeight={300} />
+>>>>>>> 73c9424a9f473d418977bbe26df819448537a1ef
             </FloatButton.Group>
         </div>
     );
