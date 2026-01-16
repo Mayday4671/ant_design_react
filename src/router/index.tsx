@@ -7,7 +7,7 @@ import AIToolsLayout from '../layouts/ai-tools-layout';
 
 // Frontend Pages - AI Tools Home
 import AIToolsHome from '../pages/frontend/ai-tools-home';
-import { About, Articles, ArticleDetail } from '../pages/frontend';
+import { About, Articles, ArticleDetail, AIChat } from '../pages/frontend';
 
 // Admin Pages
 import { Dashboard, UserList, Settings, ArticleManage, GPTChat } from '../pages/admin';
@@ -21,6 +21,7 @@ const AppRouter: React.FC = () => {
                 <Route path="about" element={<About />} />
                 <Route path="articles" element={<Articles />} />
                 <Route path="article/:id" element={<ArticleDetail />} />
+                <Route path="ai-chat" element={<AIChat />} />
             </Route>
 
             {/* 后台管理路由 */}

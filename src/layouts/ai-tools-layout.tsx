@@ -1,14 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Input, Typography, Space, ConfigProvider, theme as antdTheme } from 'antd';
+import { Layout, Menu, Input, Typography, ConfigProvider, theme as antdTheme } from 'antd';
 import {
     HomeOutlined, MessageOutlined, PictureOutlined, EditOutlined,
     VideoCameraOutlined, AudioOutlined, CodeOutlined, FileTextOutlined,
-    HighlightOutlined, SearchOutlined, RocketOutlined, AppstoreOutlined,
+    HighlightOutlined, SearchOutlined, RocketOutlined,
     SettingOutlined, GithubOutlined, BulbOutlined, ThunderboltOutlined,
-    StarOutlined, FireOutlined
+    StarOutlined, FireOutlined, TeamOutlined, RobotOutlined, CloudOutlined,
+    ExperimentOutlined, SafetyCertificateOutlined, FormOutlined, BookOutlined,
+    DashboardOutlined
 } from '@ant-design/icons';
 import { useAppTheme } from '../contexts/theme-context';
+
 import '../assets/styles/layouts/ai-tools-layout.css';
 
 const { Sider, Content } = Layout;
@@ -19,18 +22,23 @@ const sidebarCategories = [
     { key: 'all', icon: <HomeOutlined />, label: '全部工具' },
     { key: 'hot', icon: <FireOutlined />, label: '热门推荐' },
     { key: 'new', icon: <ThunderboltOutlined />, label: '最新上线' },
+    { key: 'chat', icon: <MessageOutlined />, label: 'AI 聊天' },
     { type: 'divider' as const },
-    { key: 'chat', icon: <MessageOutlined />, label: 'AI 对话' },
-    { key: 'image', icon: <PictureOutlined />, label: 'AI 绘画' },
     { key: 'writing', icon: <EditOutlined />, label: 'AI 写作' },
+    { key: 'image', icon: <PictureOutlined />, label: 'AI 图像' },
     { key: 'video', icon: <VideoCameraOutlined />, label: 'AI 视频' },
-    { key: 'audio', icon: <AudioOutlined />, label: 'AI 音频' },
-    { key: 'coding', icon: <CodeOutlined />, label: 'AI 编程' },
     { key: 'office', icon: <FileTextOutlined />, label: 'AI 办公' },
+    { key: 'agent', icon: <RobotOutlined />, label: 'AI 智能体' },
+    { key: 'coding', icon: <CodeOutlined />, label: 'AI 编程' },
     { key: 'design', icon: <HighlightOutlined />, label: 'AI 设计' },
-    { type: 'divider' as const },
-    { key: 'tools', icon: <AppstoreOutlined />, label: '效率工具' },
-    { key: 'learning', icon: <BulbOutlined />, label: 'AI 学习' },
+    { key: 'audio', icon: <AudioOutlined />, label: 'AI 音频' },
+    { key: 'search', icon: <SearchOutlined />, label: 'AI 搜索' },
+    { key: 'platform', icon: <CloudOutlined />, label: 'AI 开发平台' },
+    { key: 'learning', icon: <BookOutlined />, label: 'AI 学习网站' },
+    { key: 'model', icon: <ExperimentOutlined />, label: 'AI 训练模型' },
+    { key: 'benchmark', icon: <DashboardOutlined />, label: 'AI 模型评测' },
+    { key: 'detect', icon: <SafetyCertificateOutlined />, label: 'AI 内容检测' },
+    { key: 'prompt', icon: <FormOutlined />, label: 'AI 提示指令' },
 ];
 
 // ========== 顶部导航链接 ==========
@@ -76,16 +84,34 @@ const AIToolsLayout: React.FC = () => {
 
     const handleSearch = () => {
         if (searchValue.trim()) {
-            navigate(`/?search=${encodeURIComponent(searchValue)}`);
+            if (location.pathname.startsWith('/articles')) {
+                // 如果在资讯页面，保留在资讯页面进行搜索
+                navigate(`/articles?search=${encodeURIComponent(searchValue)}`);
+            } else {
+                // 否则跳转到 AI 工具首页
+                navigate(`/?search=${encodeURIComponent(searchValue)}`);
+            }
         }
     };
 
     const handleCategoryClick = (key: string) => {
         setSelectedCategory(key);
-        if (key === 'all') {
+        if (key === 'chat') {
+            // AI 聊天 - 跳转到 AI 聊天页面
+            navigate('/ai-chat');
+        } else if (key === 'all' || key === 'hot' || key === 'new') {
+            // 特殊分类，跳转到首页顶部
             navigate('/');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            navigate(`/?category=${key}`);
+            // 普通分类，滚动到对应锚点
+            navigate('/');
+            setTimeout(() => {
+                const element = document.getElementById(`category-${key}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
         }
     };
 
@@ -160,25 +186,49 @@ const AIToolsLayout: React.FC = () => {
                         background: isDarkMode ? '#141414' : '#f0f2f5'
                     }}
                 >
-                    {/* 顶部导航 */}
-                    <div
-                        className="top-nav"
-                        style={{
-                            background: isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.9)',
-                            borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'
-                        }}
-                    >
-                        <Space size={24}>
-                            {topNavLinks.map(link => (
-                                <Text
-                                    key={link.key}
-                                    className={`top-nav-link ${location.pathname === link.key ? 'active' : ''}`}
-                                    onClick={() => navigate(link.key)}
+                    {/* 顶部导航 - 重新设计 */}
+                    <div className="top-nav-wrapper">
+                        <div
+                            className="top-nav"
+                            style={{
+                                background: isDarkMode
+                                    ? 'rgba(15, 15, 25, 0.9)'
+                                    : 'rgba(255, 255, 255, 0.95)',
+                            }}
+                        >
+                            {/* 左侧导航链接 */}
+                            <div className="top-nav-left">
+                                {topNavLinks.map((link, index) => (
+                                    <div
+                                        key={link.key}
+                                        className={`top-nav-item ${location.pathname === link.key ? 'active' : ''}`}
+                                        onClick={() => navigate(link.key)}
+                                    >
+                                        {index === 0 && <RocketOutlined className="nav-item-icon" />}
+                                        {index === 1 && <FireOutlined className="nav-item-icon" />}
+                                        {index === 2 && <TeamOutlined className="nav-item-icon" />}
+                                        <span>{link.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* 右侧操作 */}
+                            <div className="top-nav-right">
+                                <div
+                                    className="nav-action-btn"
+                                    onClick={() => setIsDarkMode(!isDarkMode)}
                                 >
-                                    {link.label}
-                                </Text>
-                            ))}
-                        </Space>
+                                    {isDarkMode ? <BulbOutlined /> : <StarOutlined />}
+                                </div>
+                                <div
+                                    className="nav-action-btn primary"
+                                    onClick={() => navigate('/admin')}
+                                >
+                                    <SettingOutlined />
+                                    <span>管理后台</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Hero 搜索区 */}

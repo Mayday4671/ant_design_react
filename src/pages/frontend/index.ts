@@ -5,4 +5,5 @@ export { default as ArticleDetail } from './article-detail';
 export { default as News } from './news';
 export { default as Products } from './products';
 export { default as AITools } from './ai-tools';
+export { default as AIChat } from './ai-chat';
 

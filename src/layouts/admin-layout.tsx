@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Button, theme, ConfigProvider } from 'antd';
+import { Layout, Menu, Button, ConfigProvider } from 'antd';
 import {
     MenuFoldOutlined, MenuUnfoldOutlined, DashboardOutlined,
     UserOutlined, SettingOutlined,
-    RobotOutlined, HomeOutlined, ReadOutlined
+    RobotOutlined, HomeOutlined, ReadOutlined, CrownOutlined
 } from '@ant-design/icons';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAppTheme } from '../contexts/theme-context';
@@ -11,22 +11,34 @@ import { useAppTheme } from '../contexts/theme-context';
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout: React.FC = () => {
-    const { adminBackgroundImage, contentOpacity, isDarkMode, getAntdTheme, colorPrimary } = useAppTheme();
+    const { adminBackgroundImage, isDarkMode, getAntdTheme } = useAppTheme();
     const [collapsed, setCollapsed] = useState(false);
-    const {
-        token: { borderRadiusLG },
-    } = theme.useToken();
     const navigate = useNavigate();
     const location = useLocation();
 
     // 使用后台专属的背景图生成主题
     const adminTheme = getAntdTheme(adminBackgroundImage);
 
-    // 默认背景色（无背景图时）
-    const defaultBgColor = isDarkMode ? '#0a0a0a' : '#f0f2f5';
-    const siderBg = isDarkMode ? '#141414' : '#ffffff';
-    const headerBg = isDarkMode ? '#141414' : '#ffffff';
-    const contentBg = isDarkMode ? '#1f1f1f' : '#ffffff';
+    // 现代化背景渐变
+    const layoutBg = isDarkMode
+        ? 'linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%)'
+        : 'linear-gradient(135deg, #e8eaf6 0%, #f5f7fa 50%, #e3f2fd 100%)';
+
+    // 玻璃拟态样式
+    const glassStyle = {
+        background: isDarkMode
+            ? 'rgba(30, 30, 45, 0.85)'
+            : 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+    };
+
+    // 菜单项样式
+    const menuItemStyle: React.CSSProperties = {
+        margin: '4px 12px',
+        borderRadius: '12px',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    };
 
     return (
         <ConfigProvider theme={adminTheme}>
@@ -35,96 +47,168 @@ const AdminLayout: React.FC = () => {
                     minHeight: '100vh',
                     background: adminBackgroundImage
                         ? `url(${adminBackgroundImage}) center/cover fixed`
-                        : defaultBgColor,
+                        : layoutBg,
                 }}
             >
                 <Sider
                     trigger={null}
                     collapsible
                     collapsed={collapsed}
+                    width={240}
                     theme={isDarkMode ? 'dark' : 'light'}
                     style={{
-                        background: adminBackgroundImage
-                            ? `rgba(${isDarkMode ? '20, 20, 20' : '255, 255, 255'}, ${contentOpacity})`
-                            : siderBg,
-                        borderRight: `1px solid ${isDarkMode ? '#303030' : '#f0f0f0'}`,
-                        boxShadow: adminBackgroundImage ? 'none' : '2px 0 8px rgba(0,0,0,0.05)',
+                        ...glassStyle,
+                        borderRight: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                        boxShadow: isDarkMode
+                            ? '4px 0 24px rgba(0,0,0,0.3), inset 0 0 60px rgba(255,255,255,0.02)'
+                            : '4px 0 24px rgba(0,0,0,0.08), inset 0 0 60px rgba(255,255,255,0.5)',
+                        position: 'fixed',
+                        height: '100vh',
+                        left: 0,
+                        top: 0,
+                        zIndex: 100,
                     }}
                 >
+                    {/* Logo区域 */}
                     <div
                         style={{
-                            padding: '20px 16px',
+                            padding: collapsed ? '24px 8px' : '28px 24px',
                             textAlign: 'center',
-                            borderBottom: `1px solid ${isDarkMode ? '#303030' : '#f0f0f0'}`,
+                            borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                            background: isDarkMode
+                                ? 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%)'
+                                : 'linear-gradient(180deg, rgba(102, 126, 234, 0.05) 0%, transparent 100%)',
+                            position: 'relative',
                         }}
                     >
-                        <h1
-                            style={{
-                                margin: 0,
-                                fontSize: collapsed ? '0.9rem' : '1.1rem',
-                                fontWeight: 600,
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                color: isDarkMode ? '#fff' : colorPrimary,
-                            }}
-                        >
-                            {collapsed ? '🏠' : '后台管理系统'}
-                        </h1>
-                    </div>
-                    <Menu
-                        theme={isDarkMode ? 'dark' : 'light'}
-                        mode="inline"
-                        selectedKeys={[location.pathname]}
-                        onClick={({ key }) => navigate(key)}
-                        style={{ border: 'none', background: 'transparent' }}
-                        items={[
-                            {
-                                key: '/admin',
-                                icon: <DashboardOutlined />,
-                                label: '仪表盘',
-                            },
-                            {
-                                key: '/admin/articles',
-                                icon: <ReadOutlined />,
-                                label: '文章管理',
-                            },
-                            {
-                                key: '/admin/users',
-                                icon: <UserOutlined />,
-                                label: '用户列表',
-                            },
-                            {
-                                key: '/admin/ai',
-                                icon: <RobotOutlined />,
-                                label: 'AI 助手',
-                            },
-                            {
-                                key: '/admin/settings',
-                                icon: <SettingOutlined />,
-                                label: '设置',
-                            },
-                            {
-                                type: 'divider',
-                            },
-                            {
-                                key: '/',
-                                icon: <HomeOutlined />,
-                                label: '返回前台',
-                            },
-                        ]}
-                    />
-                </Sider>
-                <Layout style={{ background: 'transparent' }}>
-                    <Header
-                        style={{
-                            padding: '0 16px',
+                        <div style={{
                             display: 'flex',
                             alignItems: 'center',
-                            background: adminBackgroundImage
-                                ? `rgba(${isDarkMode ? '20, 20, 20' : '255, 255, 255'}, ${contentOpacity})`
-                                : headerBg,
-                            borderBottom: `1px solid ${isDarkMode ? '#303030' : '#f0f0f0'}`,
-                            boxShadow: adminBackgroundImage ? 'none' : '0 2px 8px rgba(0,0,0,0.04)',
+                            justifyContent: 'center',
+                            gap: collapsed ? 0 : 12,
+                        }}>
+                            <CrownOutlined style={{
+                                fontSize: collapsed ? 28 : 32,
+                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                filter: 'drop-shadow(0 2px 8px rgba(102, 126, 234, 0.4))',
+                                animation: 'logoFloat 3s ease-in-out infinite',
+                            }} />
+                            {!collapsed && (
+                                <h1
+                                    style={{
+                                        margin: 0,
+                                        fontSize: '1.25rem',
+                                        fontWeight: 700,
+                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                        letterSpacing: '0.5px',
+                                    }}
+                                >
+                                    管理控制台
+                                </h1>
+                            )}
+                        </div>
+                        {/* 底部渐变线 */}
+                        <div style={{
+                            position: 'absolute',
+                            bottom: -1,
+                            left: 20,
+                            right: 20,
+                            height: 2,
+                            background: 'linear-gradient(90deg, transparent, #667eea, #764ba2, transparent)',
+                            borderRadius: 2,
+                        }} />
+                    </div>
+
+                    {/* 菜单列表 */}
+                    <div style={{
+                        flex: 1,
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        padding: '12px 0',
+                    }}>
+                        <Menu
+                            theme={isDarkMode ? 'dark' : 'light'}
+                            mode="inline"
+                            selectedKeys={[location.pathname]}
+                            onClick={({ key }) => navigate(key)}
+                            style={{
+                                border: 'none',
+                                background: 'transparent',
+                            }}
+                            items={[
+                                {
+                                    key: '/admin',
+                                    icon: <DashboardOutlined style={{ fontSize: 18 }} />,
+                                    label: '仪表盘',
+                                    style: menuItemStyle,
+                                },
+                                {
+                                    key: '/admin/articles',
+                                    icon: <ReadOutlined style={{ fontSize: 18 }} />,
+                                    label: '文章管理',
+                                    style: menuItemStyle,
+                                },
+                                {
+                                    key: '/admin/users',
+                                    icon: <UserOutlined style={{ fontSize: 18 }} />,
+                                    label: '用户列表',
+                                    style: menuItemStyle,
+                                },
+                                {
+                                    key: '/admin/ai',
+                                    icon: <RobotOutlined style={{ fontSize: 18 }} />,
+                                    label: 'AI 助手',
+                                    style: menuItemStyle,
+                                },
+                                {
+                                    key: '/admin/settings',
+                                    icon: <SettingOutlined style={{ fontSize: 18 }} />,
+                                    label: '设置',
+                                    style: menuItemStyle,
+                                },
+                                {
+                                    type: 'divider',
+                                    style: {
+                                        margin: '16px 24px',
+                                        background: isDarkMode
+                                            ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)'
+                                            : 'linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)',
+                                    },
+                                },
+                                {
+                                    key: '/',
+                                    icon: <HomeOutlined style={{ fontSize: 18 }} />,
+                                    label: '返回前台',
+                                    style: menuItemStyle,
+                                },
+                            ]}
+                        />
+                    </div>
+                </Sider>
+
+                {/* 主内容区 */}
+                <Layout style={{
+                    marginLeft: collapsed ? 80 : 240,
+                    background: 'transparent',
+                    transition: 'margin-left 0.2s',
+                }}>
+                    {/* 顶部导航栏 */}
+                    <Header
+                        style={{
+                            padding: '0 24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            ...glassStyle,
+                            borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                            position: 'sticky',
+                            top: 0,
+                            zIndex: 50,
                         }}
                     >
                         <Button
@@ -132,31 +216,113 @@ const AdminLayout: React.FC = () => {
                             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                             onClick={() => setCollapsed(!collapsed)}
                             style={{
-                                fontSize: '16px',
+                                fontSize: '18px',
                                 width: 48,
                                 height: 48,
+                                borderRadius: 12,
+                                transition: 'all 0.3s',
                             }}
                         />
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 16,
+                        }}>
+                            <span style={{
+                                fontSize: 14,
+                                color: isDarkMode ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.65)',
+                            }}>
+                                欢迎回来，管理员
+                            </span>
+                            <div style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: '50%',
+                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#fff',
+                                fontSize: 14,
+                                fontWeight: 600,
+                                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                            }}>
+                                A
+                            </div>
+                        </div>
                     </Header>
+
+                    {/* 内容区域 */}
                     <Content
                         style={{
                             margin: 24,
-                            padding: 24,
-                            minHeight: 280,
-                            background: adminBackgroundImage
-                                ? `rgba(${isDarkMode ? '30, 30, 30' : '255, 255, 255'}, ${contentOpacity})`
-                                : contentBg,
-                            borderRadius: borderRadiusLG,
-                            boxShadow: adminBackgroundImage ? 'none' : '0 2px 8px rgba(0,0,0,0.06)',
-                            border: adminBackgroundImage
-                                ? `1px solid rgba(${isDarkMode ? '255,255,255' : '0,0,0'}, 0.1)`
-                                : 'none',
+                            padding: 28,
+                            minHeight: 'calc(100vh - 112px)',
+                            ...glassStyle,
+                            borderRadius: 20,
+                            boxShadow: isDarkMode
+                                ? '0 8px 32px rgba(0,0,0,0.3), inset 0 0 60px rgba(255,255,255,0.02)'
+                                : '0 8px 32px rgba(0,0,0,0.08), inset 0 0 60px rgba(255,255,255,0.5)',
+                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`,
                         }}
                     >
                         <Outlet />
                     </Content>
                 </Layout>
             </Layout>
+
+            {/* 添加全局动画样式 */}
+            <style>{`
+                @keyframes logoFloat {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-3px); }
+                }
+                
+                .ant-menu-item {
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .ant-menu-item::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 50%;
+                    transform: translateY(-50%) scaleY(0);
+                    width: 4px;
+                    height: 60%;
+                    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+                    border-radius: 0 4px 4px 0;
+                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                
+                .ant-menu-item:hover {
+                    transform: translateX(4px);
+                }
+                
+                .ant-menu-item:hover .anticon {
+                    transform: scale(1.15);
+                    filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.4));
+                }
+                
+                .ant-menu-item .anticon {
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                
+                .ant-menu-item-selected::before {
+                    transform: translateY(-50%) scaleY(1);
+                }
+                
+                .ant-menu-item-selected {
+                    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%) !important;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+                }
+                
+                .ant-menu-item-selected .anticon {
+                    color: #667eea !important;
+                    filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.4));
+                }
+            `}</style>
         </ConfigProvider>
     );
 };

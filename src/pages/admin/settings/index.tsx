@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-    Typography, Card, Form, Input, Slider, Switch, Row, Col, Space, ColorPicker, Radio, Tooltip
+    Typography, Card, Form, Input, Slider, Switch, Row, Col, Space, ColorPicker, Radio, Tooltip, Button, message
 } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
+import { getStoredApiKey, saveApiKey, clearApiKey } from '../../../services/openai';
 import {
     useAppTheme, PRESET_THEMES, PRIMARY_COLORS
 } from '../../../contexts/theme-context';
@@ -66,6 +67,20 @@ const ThemePreviewCard: React.FC<{
 };
 
 const Settings: React.FC = () => {
+    // API Key State
+    const [apiKey, setApiKey] = React.useState(getStoredApiKey());
+    const [tempApiKey, setTempApiKey] = React.useState('');
+
+    const handleSaveApiKey = () => {
+        if (!tempApiKey.trim()) {
+            message.error('请输入有效的 API Key');
+            return;
+        }
+        saveApiKey(tempApiKey.trim());
+        setApiKey(tempApiKey.trim());
+        message.success('API Key 已保存');
+    };
+
     const {
         presetThemeId,
         colorPrimary,
@@ -190,6 +205,33 @@ const Settings: React.FC = () => {
                         </Form.Item>
                     </Col>
                 </Row>
+            </Card>
+
+            {/* AI 助手配置 */}
+            <Card title="AI 助手配置" className="settings-card">
+                <Form.Item label="OpenAI API Key" extra="用于前台 AI 助手的对话功能（仅存储在本地）">
+                    <Space.Compact style={{ width: '100%', maxWidth: 500 }}>
+                        <Input.Password
+                            placeholder="sk-..."
+                            value={apiKey}
+                            onChange={(e) => setTempApiKey(e.target.value)}
+                            onPressEnter={handleSaveApiKey}
+                        />
+                        <Button type="primary" onClick={handleSaveApiKey}>
+                            保存
+                        </Button>
+                        {getStoredApiKey() && (
+                            <Button danger onClick={() => {
+                                clearApiKey();
+                                setApiKey('');
+                                setTempApiKey('');
+                                message.success('API Key 已清除');
+                            }}>
+                                清除
+                            </Button>
+                        )}
+                    </Space.Compact>
+                </Form.Item>
             </Card>
 
             {/* 背景图片 */}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Row, Col, Card, Tag, Avatar, Space, Spin, Input, Select, Pagination, Empty } from 'antd';
-import { EyeOutlined, HeartOutlined, ClockCircleOutlined, SearchOutlined, FireOutlined } from '@ant-design/icons';
+import { Typography, Row, Col, Card, Tag, Avatar, Space, Spin, Pagination, Empty } from 'antd';
+import { EyeOutlined, HeartOutlined, ClockCircleOutlined, FireOutlined } from '@ant-design/icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getArticles, getCategories, type Article, type Category } from '../../../services/article-mock';
 import '../../../assets/styles/pages/frontend/articles.css';
@@ -23,6 +23,19 @@ const Articles: React.FC = () => {
         getCategories().then(res => setCategories(res.data));
     }, []);
 
+    // 监听 URL 参数变化，同步到状态
+    useEffect(() => {
+        const urlSearch = searchParams.get('search') || '';
+        const urlCategory = searchParams.get('category') || '';
+
+        if (urlSearch !== search) {
+            setSearch(urlSearch);
+        }
+        if (urlCategory !== category) {
+            setCategory(urlCategory);
+        }
+    }, [searchParams]);
+
     useEffect(() => {
         const fetchArticles = async () => {
             setLoading(true);
@@ -41,16 +54,6 @@ const Articles: React.FC = () => {
         fetchArticles();
     }, [page, category, search]);
 
-    const handleSearch = (value: string) => {
-        setSearch(value);
-        setPage(1);
-        setSearchParams(prev => {
-            if (value) prev.set('search', value);
-            else prev.delete('search');
-            return prev;
-        });
-    };
-
     const handleCategoryChange = (value: string) => {
         setCategory(value);
         setPage(1);
@@ -63,37 +66,23 @@ const Articles: React.FC = () => {
 
     return (
         <div className="articles-container">
-            {/* Header */}
-            <div className="articles-header">
-                <Title level={2}>全部文章</Title>
-                <Paragraph type="secondary">
-                    探索我们的精彩内容，发现有价值的见解
-                </Paragraph>
-            </div>
-
-            {/* Filters */}
-            <div className="articles-filters">
-                <Space wrap>
-                    <Input.Search
-                        placeholder="搜索文章..."
-                        allowClear
-                        onSearch={handleSearch}
-                        defaultValue={search}
-                        style={{ width: 240 }}
-                        prefix={<SearchOutlined />}
-                    />
-                    <Select
-                        placeholder="选择分类"
-                        allowClear
-                        value={category || undefined}
-                        onChange={handleCategoryChange}
-                        style={{ width: 150 }}
-                        options={[
-                            { value: '', label: '全部分类' },
-                            ...categories.map(c => ({ value: c.name, label: c.name }))
-                        ]}
-                    />
-                </Space>
+            {/* Category Tags */}
+            <div className="article-category-filter">
+                <Tag
+                    className={`article-category-tag ${!category ? 'active' : ''}`}
+                    onClick={() => handleCategoryChange('')}
+                >
+                    全部
+                </Tag>
+                {categories.map(cat => (
+                    <Tag
+                        key={cat.id}
+                        className={`article-category-tag ${category === cat.name ? 'active' : ''}`}
+                        onClick={() => handleCategoryChange(cat.name)}
+                    >
+                        {cat.name}
+                    </Tag>
+                ))}
             </div>
 
             {/* Articles Grid */}

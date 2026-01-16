@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useOutletContext, useSearchParams } from 'react-router-dom';
-import { Typography, Row, Col, Card, Tag, Spin, Empty, Avatar, Space } from 'antd';
+import { useOutletContext, useSearchParams, useNavigate } from 'react-router-dom';
+import { Typography, Row, Col, Card, Tag, Spin, Empty, Avatar, Space, FloatButton, Tooltip } from 'antd';
 import {
     MessageOutlined, PictureOutlined, EditOutlined,
     VideoCameraOutlined, AudioOutlined, CodeOutlined, FileTextOutlined,
     HighlightOutlined, FireOutlined, ThunderboltOutlined, RightOutlined,
-    LinkOutlined
+    LinkOutlined, RobotOutlined
 } from '@ant-design/icons';
 import {
     getCategories, getToolsByCategory, getHotTools, getNewTools,
@@ -43,13 +43,25 @@ const categoryGradients: Record<string, string> = {
 const ToolCard: React.FC<{ tool: AITool }> = ({ tool }) => {
     const gradient = categoryGradients[tool.category] || categoryGradients['chat'];
 
+    // 使用Google Favicon API获取图标（解决CORS跨域问题）
+    const getFaviconUrl = (url: string) => {
+        try {
+            const domain = new URL(url).hostname;
+            return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+        } catch {
+            return '';
+        }
+    };
+
+    const iconUrl = getFaviconUrl(tool.url);
+
     return (
         <a href={tool.url} target="_blank" rel="noopener noreferrer" className="tool-card-link">
             <Card hoverable className="tool-card" size="small">
                 <div className="tool-card-content">
                     <div className="tool-icon-wrapper" style={{ background: gradient }}>
                         <Avatar
-                            src={tool.icon}
+                            src={iconUrl}
                             size={36}
                             shape="square"
                             style={{ background: 'transparent' }}
@@ -85,7 +97,7 @@ const CategorySection: React.FC<{
     category: AICategory;
     tools: AITool[];
 }> = ({ category, tools }) => (
-    <section id={category.id} className="category-section">
+    <section id={`category-${category.id}`} className="category-section">
         <div className="category-header">
             <Space align="center">
                 <span className="category-icon">{iconMap[category.icon]}</span>
@@ -140,7 +152,8 @@ interface LayoutContext {
 }
 
 const AIToolsHome: React.FC = () => {
-    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const context = useOutletContext<LayoutContext>();
 
     const [loading, setLoading] = useState(true);
@@ -152,6 +165,7 @@ const AIToolsHome: React.FC = () => {
     // 从 URL 或 context 获取过滤参数
     const searchValue = searchParams.get('search') || context?.searchValue || '';
     const categoryFilter = searchParams.get('category') || '';
+    const subCategoryFilter = searchParams.get('sub') || ''; // 子分类过滤
 
     useEffect(() => {
         const fetchData = async () => {
@@ -179,6 +193,15 @@ const AIToolsHome: React.FC = () => {
 
         if (categoryFilter) {
             allTools = toolsByCategory[categoryFilter] || [];
+
+            // 如果有子分类过滤，进一步筛选
+            if (subCategoryFilter) {
+                allTools = allTools.filter(t =>
+                    t.subCategory === subCategoryFilter ||
+                    // 如果子分类是 xxx-all，则显示该分类下所有工具
+                    subCategoryFilter.endsWith('-all')
+                );
+            }
         } else {
             Object.values(toolsByCategory).forEach(tools => {
                 allTools = [...allTools, ...tools];
@@ -205,12 +228,60 @@ const AIToolsHome: React.FC = () => {
         );
     }
 
-    // 如果有搜索或分类过滤，显示过滤结果
-    if (searchValue || categoryFilter) {
+    // 只有搜索时才显示过滤结果（分类现在是锚点跳转模式）
+    if (searchValue) {
         const filteredTools = getFilteredTools();
+
+        // 获取显示名称
         const categoryName = categoryFilter
-            ? categories.find(c => c.id === categoryFilter)?.name
+            ? categories.find(c => c.id === categoryFilter)?.name || categoryFilter
             : '搜索结果';
+
+        // 子分类配置
+        const subCategoryConfig: Record<string, { key: string; label: string }[]> = {
+            writing: [
+                { key: 'all', label: '全部' },
+                { key: 'writing-paper', label: 'AI论文写作' },
+                { key: 'writing-novel', label: 'AI小说创作' },
+                { key: 'writing-copy', label: 'AI营销文案' },
+                { key: 'writing-doc', label: 'AI公文写作' },
+            ],
+            image: [
+                { key: 'all', label: '全部' },
+                { key: 'image-gen', label: 'AI图像生成' },
+                { key: 'image-edit', label: 'AI图片编辑' },
+                { key: 'image-remove', label: 'AI抠图去背' },
+                { key: 'image-model', label: 'AI模型社区' },
+            ],
+            video: [
+                { key: 'all', label: '全部' },
+                { key: 'video-gen', label: 'AI视频生成' },
+                { key: 'video-edit', label: 'AI视频编辑' },
+                { key: 'video-avatar', label: 'AI数字人' },
+            ],
+            office: [
+                { key: 'all', label: '全部' },
+                { key: 'office-ppt', label: 'AI PPT生成' },
+                { key: 'office-doc', label: 'AI文档处理' },
+                { key: 'office-data', label: 'AI数据分析' },
+                { key: 'office-meet', label: 'AI会议助手' },
+            ],
+            chat: [
+                { key: 'all', label: '全部' },
+                { key: 'chat-cn', label: '国产大模型' },
+                { key: 'chat-global', label: '海外大模型' },
+                { key: 'chat-role', label: 'AI角色扮演' },
+            ],
+            coding: [
+                { key: 'all', label: '全部' },
+                { key: 'coding-ide', label: 'AI编程IDE' },
+                { key: 'coding-assist', label: 'AI代码助手' },
+                { key: 'coding-nocode', label: 'AI零代码开发' },
+            ],
+        };
+
+        const subCategories = subCategoryConfig[categoryFilter] || [];
+        const hasSubCategories = subCategories.length > 0 && !searchValue;
 
         return (
             <div className="ai-tools-home">
@@ -223,6 +294,28 @@ const AIToolsHome: React.FC = () => {
                             <Tag className="category-count">{filteredTools.length} 个</Tag>
                         </Space>
                     </div>
+
+                    {/* 子分类标签过滤器 */}
+                    {hasSubCategories && (
+                        <div className="sub-category-filter">
+                            {subCategories.map(sub => (
+                                <Tag
+                                    key={sub.key}
+                                    className={`sub-category-tag ${subCategoryFilter === sub.key || (sub.key === 'all' && !subCategoryFilter) ? 'active' : ''}`}
+                                    onClick={() => {
+                                        if (sub.key === 'all') {
+                                            setSearchParams({ category: categoryFilter });
+                                        } else {
+                                            setSearchParams({ category: categoryFilter, sub: sub.key });
+                                        }
+                                    }}
+                                >
+                                    {sub.label}
+                                </Tag>
+                            ))}
+                        </div>
+                    )}
+
                     {filteredTools.length === 0 ? (
                         <Empty description="未找到匹配的工具" />
                     ) : (
@@ -266,6 +359,18 @@ const AIToolsHome: React.FC = () => {
                     tools={toolsByCategory[cat.id] || []}
                 />
             ))}
+
+            {/* 浮动按钮组 */}
+            <FloatButton.Group shape="circle" style={{ right: 40, bottom: 40 }}>
+                <Tooltip title="AI 智能对话" placement="left">
+                    <FloatButton
+                        icon={<RobotOutlined />}
+                        type="primary"
+                        onClick={() => navigate('/ai-chat')}
+                    />
+                </Tooltip>
+                <FloatButton.BackTop visibilityHeight={300} />
+            </FloatButton.Group>
         </div>
     );
 };
