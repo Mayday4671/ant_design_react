@@ -30,6 +30,7 @@
 .light-mode .category-section,
 .light-mode .featured-section {
     background: #ffffff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .light-mode .category-header {
@@ -39,11 +40,13 @@
 /* Dark Mode Styles */
 .dark-mode .category-section,
 .dark-mode .featured-section {
-    background: transparent;
+    background: rgba(30, 30, 45, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .dark-mode .category-header {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .category-header {
@@ -86,6 +89,68 @@
 
 .view-more:hover {
     opacity: 1;
+}
+
+/* ========== Sub Category Filter ========== */
+.sub-category-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    border-radius: 8px;
+}
+
+.light-mode .sub-category-filter {
+    background: #f7f8fa;
+}
+
+.dark-mode .sub-category-filter {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.sub-category-tag {
+    padding: 6px 16px;
+    font-size: 13px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none !important;
+}
+
+.light-mode .sub-category-tag {
+    background: #ffffff;
+    color: #666;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .sub-category-tag {
+    background: #2a2a2a;
+    color: #999;
+}
+
+.sub-category-tag:hover {
+    color: #1890ff;
+    transform: translateY(-1px);
+}
+
+.light-mode .sub-category-tag:hover {
+    box-shadow: 0 2px 6px rgba(24, 144, 255, 0.2);
+}
+
+.dark-mode .sub-category-tag:hover {
+    background: #333;
+}
+
+.sub-category-tag.active {
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    color: #fff !important;
+    font-weight: 500;
+}
+
+.sub-category-tag.active:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
 }
 
 /* ========== Tool Card ========== */
@@ -238,6 +303,11 @@
 
 .category-section:nth-of-type(6) {
     animation-delay: 0.45s;
+}
+
+.ai-chat-button,
+.ai-backtop-button {
+    background: linear-gradient(135deg, #a5b4fc 0%, #c084fc 50%, #f472b6 100%) !important;
 }
 
 /* ========== Responsive ========== */

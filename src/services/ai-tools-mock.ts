@@ -15,6 +15,7 @@ export interface AITool {
     description: string;
     icon: string; // URL or placeholder
     category: string; // Category ID
+    subCategory?: string; // Sub-category ID for filtering (e.g., 'writing-paper', 'image-gen')
     tags: string[];
     url: string;
     isHot?: boolean;
@@ -22,14 +23,22 @@ export interface AITool {
 }
 
 const categories: AICategory[] = [
-    { id: 'chat', name: 'AI 对话', icon: 'MessageOutlined' },
-    { id: 'image', name: 'AI 绘画', icon: 'PictureOutlined' },
     { id: 'writing', name: 'AI 写作', icon: 'EditOutlined' },
+    { id: 'image', name: 'AI 图像', icon: 'PictureOutlined' },
     { id: 'video', name: 'AI 视频', icon: 'VideoCameraOutlined' },
-    { id: 'audio', name: 'AI 音频', icon: 'AudioOutlined' },
-    { id: 'coding', name: 'AI 编程', icon: 'CodeOutlined' },
     { id: 'office', name: 'AI 办公', icon: 'FileTextOutlined' },
+    { id: 'agent', name: 'AI 智能体', icon: 'RobotOutlined' },
+    { id: 'chat', name: 'AI 聊天', icon: 'MessageOutlined' },
+    { id: 'coding', name: 'AI 编程', icon: 'CodeOutlined' },
     { id: 'design', name: 'AI 设计', icon: 'HighlightOutlined' },
+    { id: 'audio', name: 'AI 音频', icon: 'AudioOutlined' },
+    { id: 'search', name: 'AI 搜索', icon: 'SearchOutlined' },
+    { id: 'platform', name: 'AI 开发平台', icon: 'CloudOutlined' },
+    { id: 'learning', name: 'AI 学习网站', icon: 'BookOutlined' },
+    { id: 'model', name: 'AI 训练模型', icon: 'ExperimentOutlined' },
+    { id: 'benchmark', name: 'AI 模型评测', icon: 'DashboardOutlined' },
+    { id: 'detect', name: 'AI 内容检测', icon: 'SafetyCertificateOutlined' },
+    { id: 'prompt', name: 'AI 提示指令', icon: 'FormOutlined' },
 ];
 
 const tools: AITool[] = [

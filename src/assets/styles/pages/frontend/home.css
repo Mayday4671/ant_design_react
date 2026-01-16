@@ -305,21 +305,21 @@
     background: #fff;
 }
 
-.article-list-card {
+.latest-section .article-list-card {
     border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s ease;
 }
 
-.article-list-card:hover {
+.latest-section .article-list-card:hover {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.article-list-card .ant-card-body {
+.latest-section .article-list-card .ant-card-body {
     padding: 0;
 }
 
-.article-list-content {
+.latest-section .article-list-content {
     display: flex;
     gap: 20px;
 }

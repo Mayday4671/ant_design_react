@@ -96,9 +96,6 @@ const CategorySection: React.FC<{
                 <Title level={4} className="category-title">{category.name}</Title>
                 <Tag>{tools.length} 个工具</Tag>
             </Space>
-            <a className="view-more">
-                查看更多 <RightOutlined />
-            </a>
         </div>
         <Row gutter={[16, 16]}>
             {tools.map(tool => (
