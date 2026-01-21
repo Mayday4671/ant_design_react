@@ -3,7 +3,7 @@ import {
     Typography, Card, Form, Input, Slider, Switch, Row, Col, Space, ColorPicker, Radio, Tooltip, Button, message
 } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
-import { getStoredApiKey, saveApiKey, clearApiKey } from '../../../services/openai';
+import { getStoredApiKey, saveApiKey, clearApiKey, getStoredGoogleApiKey, saveGoogleApiKey, clearGoogleApiKey } from '../../../services/openai';
 import {
     useAppTheme, PRESET_THEMES, PRIMARY_COLORS
 } from '../../../contexts/theme-context';
@@ -68,8 +68,10 @@ const ThemePreviewCard: React.FC<{
 
 const Settings: React.FC = () => {
     // API Key State
-    const [apiKey, setApiKey] = React.useState(getStoredApiKey());
-    const [tempApiKey, setTempApiKey] = React.useState('');
+    const [_apiKey, setApiKey] = React.useState(getStoredApiKey());
+    const [tempApiKey, setTempApiKey] = React.useState(getStoredApiKey());
+    const [_googleApiKey, setGoogleApiKey] = React.useState(getStoredGoogleApiKey());
+    const [tempGoogleApiKey, setTempGoogleApiKey] = React.useState(getStoredGoogleApiKey());
 
     const handleSaveApiKey = () => {
         if (!tempApiKey.trim()) {
@@ -78,7 +80,17 @@ const Settings: React.FC = () => {
         }
         saveApiKey(tempApiKey.trim());
         setApiKey(tempApiKey.trim());
-        message.success('API Key 已保存');
+        message.success('OpenAI API Key 已保存');
+    };
+
+    const handleSaveGoogleApiKey = () => {
+        if (!tempGoogleApiKey.trim()) {
+            message.error('请输入有效的 Google API Key');
+            return;
+        }
+        saveGoogleApiKey(tempGoogleApiKey.trim());
+        setGoogleApiKey(tempGoogleApiKey.trim());
+        message.success('Google API Key 已保存');
     };
 
     const {
@@ -173,11 +185,12 @@ const Settings: React.FC = () => {
                     <Col xs={24} md={12}>
                         <Form.Item label={`内容透明度：${Math.round(contentOpacity * 100)}%`} className="form-item-inline">
                             <Slider
-                                min={0.6}
+                                min={0}
                                 max={1}
-                                step={0.02}
+                                step={0.05}
                                 value={contentOpacity}
                                 onChange={setContentOpacity}
+                                marks={{ 0: '透明', 0.5: '50%', 1: '不透明' }}
                                 style={{ maxWidth: 300 }}
                             />
                         </Form.Item>
@@ -213,7 +226,7 @@ const Settings: React.FC = () => {
                     <Space.Compact style={{ width: '100%', maxWidth: 500 }}>
                         <Input.Password
                             placeholder="sk-..."
-                            value={apiKey}
+                            value={tempApiKey}
                             onChange={(e) => setTempApiKey(e.target.value)}
                             onPressEnter={handleSaveApiKey}
                         />
@@ -226,6 +239,30 @@ const Settings: React.FC = () => {
                                 setApiKey('');
                                 setTempApiKey('');
                                 message.success('API Key 已清除');
+                            }}>
+                                清除
+                            </Button>
+                        )}
+                    </Space.Compact>
+                </Form.Item>
+
+                <Form.Item label="Google Gemini API Key" extra="用于 Gemini 模型对话（仅存储在本地）">
+                    <Space.Compact style={{ width: '100%', maxWidth: 500 }}>
+                        <Input.Password
+                            placeholder="AIza..."
+                            value={tempGoogleApiKey}
+                            onChange={(e) => setTempGoogleApiKey(e.target.value)}
+                            onPressEnter={handleSaveGoogleApiKey}
+                        />
+                        <Button type="primary" onClick={handleSaveGoogleApiKey}>
+                            保存
+                        </Button>
+                        {getStoredGoogleApiKey() && (
+                            <Button danger onClick={() => {
+                                clearGoogleApiKey();
+                                setGoogleApiKey('');
+                                setTempGoogleApiKey('');
+                                message.success('Google Key 已清除');
                             }}>
                                 清除
                             </Button>

@@ -254,6 +254,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
                     colorBgElevated: `rgba(${isDarkMode ? '45, 45, 45' : '255, 255, 255'}, ${Math.min(contentOpacity + 0.05, 1)})`,
                 }),
             },
+            cssVar: { key: 'ant' }, // 开启 CSS 变量，显式指定 key 为 ant 以保持兼容
             // 预设算法
             algorithm: algorithms,
             // 组件级 Token - 全面配置

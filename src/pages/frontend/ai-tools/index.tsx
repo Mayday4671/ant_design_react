@@ -3,7 +3,7 @@ import { Typography, Row, Col, Card, Input, Tag, Menu, Spin, Empty, Avatar, Badg
 import {
     SearchOutlined, MessageOutlined, PictureOutlined, EditOutlined,
     VideoCameraOutlined, AudioOutlined, CodeOutlined, FileTextOutlined,
-    HighlightOutlined, RightOutlined, LinkOutlined
+    HighlightOutlined, LinkOutlined
 } from '@ant-design/icons';
 import {
     getCategories, getToolsByCategory,

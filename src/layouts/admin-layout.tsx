@@ -11,7 +11,7 @@ import { useAppTheme } from '../contexts/theme-context';
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout: React.FC = () => {
-    const { adminBackgroundImage, isDarkMode, getAntdTheme } = useAppTheme();
+    const { adminBackgroundImage, isDarkMode, getAntdTheme, contentOpacity } = useAppTheme();
     const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
@@ -24,13 +24,15 @@ const AdminLayout: React.FC = () => {
         ? 'linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%)'
         : 'linear-gradient(135deg, #e8eaf6 0%, #f5f7fa 50%, #e3f2fd 100%)';
 
-    // 玻璃拟态样式
+    // 玻璃拟态样式 - blur 和透明度根据 contentOpacity 动态变化
+    // 透明度越低，blur 越弱，背景图越清晰
+    const blurAmount = Math.round(contentOpacity * 20); // 0-20px
     const glassStyle = {
         background: isDarkMode
-            ? 'rgba(30, 30, 45, 0.85)'
-            : 'rgba(255, 255, 255, 0.85)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+            ? `rgba(30, 30, 45, ${contentOpacity})`
+            : `rgba(255, 255, 255, ${contentOpacity})`,
+        backdropFilter: adminBackgroundImage && blurAmount > 0 ? `blur(${blurAmount}px) saturate(${100 + contentOpacity * 80}%)` : undefined,
+        WebkitBackdropFilter: adminBackgroundImage && blurAmount > 0 ? `blur(${blurAmount}px) saturate(${100 + contentOpacity * 80}%)` : undefined,
     };
 
     // 菜单项样式
@@ -157,6 +159,22 @@ const AdminLayout: React.FC = () => {
                                     icon: <UserOutlined style={{ fontSize: 18 }} />,
                                     label: '用户列表',
                                     style: menuItemStyle,
+                                },
+                                {
+                                    key: 'knowledge-group',
+                                    icon: <ReadOutlined style={{ fontSize: 18 }} />,
+                                    label: '项目文档',
+                                    style: menuItemStyle,
+                                    children: [
+                                        {
+                                            key: '/admin/knowledge',
+                                            label: '文档管理',
+                                        },
+                                        {
+                                            key: '/admin/knowledge/category',
+                                            label: '分类管理',
+                                        },
+                                    ],
                                 },
                                 {
                                     key: '/admin/ai',

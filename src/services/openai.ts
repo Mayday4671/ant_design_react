@@ -53,6 +53,7 @@ export const AVAILABLE_MODELS = [
     { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
     { value: 'gpt-4', label: 'GPT-4' },
     { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+    { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (Google)' },
 ];
 
 // 模型信息
@@ -133,6 +134,24 @@ export const clearApiKey = (): void => {
     localStorage.removeItem(API_KEY_STORAGE_KEY);
 };
 
+// Google API Key 存储键
+const GOOGLE_API_KEY_STORAGE_KEY = 'google_api_key';
+
+// 获取存储的 Google API Key
+export const getStoredGoogleApiKey = (): string => {
+    return localStorage.getItem(GOOGLE_API_KEY_STORAGE_KEY) || '';
+};
+
+// 保存 Google API Key
+export const saveGoogleApiKey = (apiKey: string): void => {
+    localStorage.setItem(GOOGLE_API_KEY_STORAGE_KEY, apiKey);
+};
+
+// 清除 Google API Key
+export const clearGoogleApiKey = (): void => {
+    localStorage.removeItem(GOOGLE_API_KEY_STORAGE_KEY);
+};
+
 /**
  * 发送聊天请求（非流式）
  */
@@ -163,6 +182,7 @@ export const sendChatMessage = async (
 
 /**
  * 发送聊天请求（流式）
+ * 支持 OpenAI 和 Google Gemini 模型
  */
 export const sendChatMessageStream = async (
     messages: ChatMessage[],
@@ -172,64 +192,141 @@ export const sendChatMessageStream = async (
     onComplete: () => void,
     onError: (error: Error) => void
 ): Promise<void> => {
+    // 检测是否为 Gemini 模型
+    const isGemini = model.startsWith('gemini-');
+
     try {
-        const response = await fetch(`${OPENAI_API_BASE}/chat/completions`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({
-                model,
-                messages,
-                stream: true,
-            }),
-        });
+        if (isGemini) {
+            // ========== Google Gemini API ==========
+            const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
+            const url = `${GEMINI_API_BASE}/models/${model}:streamGenerateContent?key=${apiKey}`;
 
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({ error: { message: response.statusText } }));
-            throw new Error(error.error?.message || `API Error: ${response.status}`);
-        }
+            // 转换消息格式为 Gemini 格式
+            const contents = messages
+                .filter(m => m.role !== 'system') // Gemini 不支持 system role
+                .map(m => ({
+                    role: m.role === 'assistant' ? 'model' : 'user',
+                    parts: [{ text: m.content }]
+                }));
 
-        const reader = response.body?.getReader();
-        if (!reader) {
-            throw new Error('No response body');
-        }
+            // 如果有 system message，将其作为 system instruction
+            const systemMessage = messages.find(m => m.role === 'system');
+            const systemInstruction = systemMessage ? { parts: [{ text: systemMessage.content }] } : undefined;
 
-        const decoder = new TextDecoder();
-        let buffer = '';
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop() || '';
-
-            for (const line of lines) {
-                const trimmedLine = line.trim();
-                if (!trimmedLine || !trimmedLine.startsWith('data:')) continue;
-
-                const data = trimmedLine.slice(5).trim();
-                if (data === '[DONE]') {
-                    onComplete();
-                    return;
-                }
-
-                try {
-                    const chunk: ChatCompletionChunk = JSON.parse(data);
-                    const content = chunk.choices[0]?.delta?.content;
-                    if (content) {
-                        onChunk(content);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents,
+                    systemInstruction,
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 8192,
                     }
-                } catch {
-                    // 忽略解析错误
+                }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ error: { message: response.statusText } }));
+                throw new Error(error.error?.message || `Gemini API Error: ${response.status}`);
+            }
+
+            const reader = response.body?.getReader();
+            if (!reader) {
+                throw new Error('No response body');
+            }
+
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+
+                // Gemini 返回的是 JSON 数组流
+                // 尝试解析完整的 JSON 对象
+                const jsonMatches = buffer.match(/\{[^{}]*"text"\s*:\s*"[^"]*"[^{}]*\}/g);
+                if (jsonMatches) {
+                    for (const jsonStr of jsonMatches) {
+                        try {
+                            const parsed = JSON.parse(jsonStr);
+                            if (parsed.text) {
+                                onChunk(parsed.text);
+                            }
+                        } catch {
+                            // 继续尝试
+                        }
+                    }
+                    // 移除已处理的部分
+                    const lastMatch = jsonMatches[jsonMatches.length - 1];
+                    const lastIndex = buffer.lastIndexOf(lastMatch) + lastMatch.length;
+                    buffer = buffer.slice(lastIndex);
                 }
             }
-        }
 
-        onComplete();
+            onComplete();
+        } else {
+            // ========== OpenAI API ==========
+            const response = await fetch(`${OPENAI_API_BASE}/chat/completions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                    model,
+                    messages,
+                    stream: true,
+                }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ error: { message: response.statusText } }));
+                throw new Error(error.error?.message || `API Error: ${response.status}`);
+            }
+
+            const reader = response.body?.getReader();
+            if (!reader) {
+                throw new Error('No response body');
+            }
+
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    const trimmedLine = line.trim();
+                    if (!trimmedLine || !trimmedLine.startsWith('data:')) continue;
+
+                    const data = trimmedLine.slice(5).trim();
+                    if (data === '[DONE]') {
+                        onComplete();
+                        return;
+                    }
+
+                    try {
+                        const chunk: ChatCompletionChunk = JSON.parse(data);
+                        const content = chunk.choices[0]?.delta?.content;
+                        if (content) {
+                            onChunk(content);
+                        }
+                    } catch {
+                        // 忽略解析错误
+                    }
+                }
+            }
+
+            onComplete();
+        }
     } catch (error) {
         onError(error instanceof Error ? error : new Error(String(error)));
     }

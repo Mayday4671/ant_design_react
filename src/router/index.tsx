@@ -10,7 +10,8 @@ import AIToolsHome from '../pages/frontend/ai-tools-home';
 import { About, Articles, ArticleDetail, AIChat } from '../pages/frontend';
 
 // Admin Pages
-import { Dashboard, UserList, Settings, ArticleManage, GPTChat } from '../pages/admin';
+import { Dashboard, UserList, Settings, ArticleManage, GPTChat, KnowledgeAdmin, CategoryAdmin } from '../pages/admin';
+import KnowledgeViewer from '../pages/frontend/knowledge';
 
 const AppRouter: React.FC = () => {
     return (
@@ -22,6 +23,7 @@ const AppRouter: React.FC = () => {
                 <Route path="articles" element={<Articles />} />
                 <Route path="article/:id" element={<ArticleDetail />} />
                 <Route path="ai-chat" element={<AIChat />} />
+                <Route path="docs" element={<KnowledgeViewer />} />
             </Route>
 
             {/* 后台管理路由 */}
@@ -29,6 +31,8 @@ const AppRouter: React.FC = () => {
                 <Route index element={<Dashboard />} />
                 <Route path="users" element={<UserList />} />
                 <Route path="articles" element={<ArticleManage />} />
+                <Route path="knowledge" element={<KnowledgeAdmin />} />
+                <Route path="knowledge/category" element={<CategoryAdmin />} />
                 <Route path="ai" element={<GPTChat />} />
                 <Route path="settings" element={<Settings />} />
             </Route>

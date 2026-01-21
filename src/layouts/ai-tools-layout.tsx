@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Input, Typography, ConfigProvider, theme as antdTheme } from 'antd';
+import { Layout, Menu, Input, Typography, ConfigProvider } from 'antd';
 import {
     HomeOutlined, MessageOutlined, PictureOutlined, EditOutlined,
     VideoCameraOutlined, AudioOutlined, CodeOutlined, FileTextOutlined,
@@ -23,6 +23,7 @@ const sidebarCategories = [
     { key: 'hot', icon: <FireOutlined />, label: '热门推荐' },
     { key: 'new', icon: <ThunderboltOutlined />, label: '最新上线' },
     { key: 'chat', icon: <MessageOutlined />, label: 'AI 聊天' },
+    { key: 'docs', icon: <FileTextOutlined />, label: '项目文档' },
     { type: 'divider' as const },
     { key: 'writing', icon: <EditOutlined />, label: 'AI 写作' },
     { key: 'image', icon: <PictureOutlined />, label: 'AI 图像' },
@@ -45,6 +46,7 @@ const sidebarCategories = [
 const topNavLinks = [
     { key: '/', label: 'AI工具导航' },
     { key: '/articles', label: '每日AI资讯' },
+    { key: '/docs', label: '项目文档' },
     { key: '/about', label: '关于我们' },
 ];
 
@@ -54,32 +56,29 @@ const hotSearchTags = ['ChatGPT', 'Midjourney', 'Claude', 'Stable Diffusion', 'C
 const AIToolsLayout: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { isDarkMode, setIsDarkMode } = useAppTheme();
+    const { isDarkMode, setIsDarkMode, getAntdTheme, frontendBackgroundImage, contentOpacity } = useAppTheme();
     const [searchValue, setSearchValue] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
 
-    // 黑暗主题配置
-    const darkTheme = {
-        algorithm: antdTheme.darkAlgorithm,
-        token: {
-            colorPrimary: '#1890ff',
-            colorBgContainer: '#1f1f1f',
-            colorBgElevated: '#2a2a2a',
-            colorBgLayout: '#141414',
-            borderRadius: 8,
-        },
-    };
+    // 使用主题上下文的主题配置（支持背景图和透明度）
+    const themeConfig = getAntdTheme(frontendBackgroundImage);
 
-    // 明亮主题配置
-    const lightTheme = {
-        algorithm: antdTheme.defaultAlgorithm,
-        token: {
-            colorPrimary: '#1890ff',
-            colorBgContainer: '#ffffff',
-            colorBgElevated: '#f5f5f5',
-            colorBgLayout: '#f0f2f5',
-            borderRadius: 8,
-        },
+    // 默认背景
+    const defaultBg = isDarkMode ? '#141414' : '#f0f2f5';
+    // 布局背景样式
+    const layoutBgStyle = frontendBackgroundImage
+        ? `url(${frontendBackgroundImage}) center/cover fixed`
+        : defaultBg;
+
+    // 动态 blur 效果（跟随透明度变化）
+    const blurAmount = Math.round(contentOpacity * 20); // 0-20px
+    // 玻璃拟态样式（应用 contentOpacity 和动态 blur）
+    const glassStyle = {
+        background: isDarkMode
+            ? `rgba(30, 30, 45, ${contentOpacity})`
+            : `rgba(255, 255, 255, ${contentOpacity})`,
+        backdropFilter: frontendBackgroundImage && blurAmount > 0 ? `blur(${blurAmount}px) saturate(${100 + contentOpacity * 80}%)` : undefined,
+        WebkitBackdropFilter: frontendBackgroundImage && blurAmount > 0 ? `blur(${blurAmount}px) saturate(${100 + contentOpacity * 80}%)` : undefined,
     };
 
     const handleSearch = () => {
@@ -99,6 +98,9 @@ const AIToolsLayout: React.FC = () => {
         if (key === 'chat') {
             // AI 聊天 - 跳转到 AI 聊天页面
             navigate('/ai-chat');
+        } else if (key === 'docs') {
+            // 项目文档 - 跳转到文档页面
+            navigate('/docs');
         } else if (key === 'all' || key === 'hot' || key === 'new') {
             // 特殊分类，跳转到首页顶部
             navigate('/');
@@ -129,12 +131,23 @@ const AIToolsLayout: React.FC = () => {
         []);
 
     return (
-        <ConfigProvider theme={isDarkMode ? darkTheme : lightTheme}>
-            <Layout className={`ai-nav-layout ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
+        <ConfigProvider theme={themeConfig}>
+            <Layout
+                className={`ai-nav-layout ${isDarkMode ? 'dark-mode' : 'light-mode'} ${frontendBackgroundImage ? 'has-bg-image' : ''}`}
+                style={{
+                    background: layoutBgStyle,
+                    // @ts-expect-error CSS 变量
+                    '--content-opacity': contentOpacity,
+                    '--blur-amount': `${blurAmount}px`,
+                    height: '100vh',
+                    overflow: 'hidden',
+                }}
+            >
                 <Sider
                     width={220}
                     className="ai-nav-sider"
                     theme={isDarkMode ? 'dark' : 'light'}
+                    style={frontendBackgroundImage ? glassStyle : undefined}
                 >
                     <div className="sider-inner">
                         {/* Logo */}
@@ -205,16 +218,12 @@ const AIToolsLayout: React.FC = () => {
                                     <div
                                         key={link.key}
                                         className={`top-nav-item ${location.pathname === link.key ? 'active' : ''}`}
-<<<<<<< HEAD
                                         onClick={() => {
                                             navigate(link.key);
                                             if (link.key === '/') {
                                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                             }
                                         }}
-=======
-                                        onClick={() => navigate(link.key)}
->>>>>>> 73c9424a9f473d418977bbe26df819448537a1ef
                                     >
                                         {index === 0 && <RocketOutlined className="nav-item-icon" />}
                                         {index === 1 && <FireOutlined className="nav-item-icon" />}
@@ -243,53 +252,48 @@ const AIToolsLayout: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Hero 搜索区 */}
-                    <div className="hero-search-area">
-                        <div className="hero-brand">
-                            <RocketOutlined className="hero-icon" />
-                            <Title level={2} className="hero-title">AI 工具导航</Title>
+                    {/* Hero 搜索区 - 仅在首页显示 */}
+                    {location.pathname === '/' && (
+                        <div className="hero-search-area">
+                            <div className="hero-brand">
+                                <RocketOutlined className="hero-icon" />
+                                <Title level={2} className="hero-title">AI 工具导航</Title>
+                            </div>
+                            <Text className="hero-subtitle">
+                                发现最新最热的 AI 工具，提升你的工作效率
+                            </Text>
+                            <Input
+                                size="large"
+                                placeholder="搜索 AI 工具、网站、应用..."
+                                prefix={<SearchOutlined />}
+                                className="hero-search-input"
+                                value={searchValue}
+                                onChange={e => setSearchValue(e.target.value)}
+                                onPressEnter={handleSearch}
+                                allowClear
+                            />
+                            <div className="hero-hot-tags">
+                                <Text className="hot-label">热门搜索：</Text>
+                                {hotSearchTags.map(tag => (
+                                    <span
+                                        key={tag}
+                                        className="hot-tag"
+                                        onClick={() => {
+                                            setSearchValue(tag);
+                                            navigate(`/?search=${encodeURIComponent(tag)}`);
+                                        }}
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
                         </div>
-                        <Text className="hero-subtitle">
-                            发现最新最热的 AI 工具，提升你的工作效率
-                        </Text>
-                        <Input
-                            size="large"
-                            placeholder="搜索 AI 工具、网站、应用..."
-                            prefix={<SearchOutlined />}
-                            className="hero-search-input"
-                            value={searchValue}
-                            onChange={e => setSearchValue(e.target.value)}
-                            onPressEnter={handleSearch}
-                            allowClear
-                        />
-                        <div className="hero-hot-tags">
-                            <Text className="hot-label">热门搜索：</Text>
-                            {hotSearchTags.map(tag => (
-                                <span
-                                    key={tag}
-                                    className="hot-tag"
-                                    onClick={() => {
-                                        setSearchValue(tag);
-                                        navigate(`/?search=${encodeURIComponent(tag)}`);
-                                    }}
-                                >
-                                    {tag}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
+                    )}
 
                     {/* 内容区 */}
-                    <Content className="main-content">
+                    <Content className="main-content" style={{ overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column', padding: 14 }}>
                         <Outlet context={{ searchValue, selectedCategory }} />
                     </Content>
-
-                    {/* 页脚 */}
-                    <div className="main-footer">
-                        <Text type="secondary">
-                            © {new Date().getFullYear()} AI 工具导航 - 发现最好的 AI 工具
-                        </Text>
-                    </div>
                 </Layout>
             </Layout>
         </ConfigProvider>

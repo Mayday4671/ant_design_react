@@ -33,6 +33,16 @@
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
+/* Light Mode with Background Image - Transparent Glass Effect */
+.light-mode.has-bg-image .category-section,
+.light-mode.has-bg-image .featured-section {
+    background: rgba(255, 255, 255, var(--content-opacity, 0.85));
+    backdrop-filter: blur(var(--blur-amount, 15px)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--blur-amount, 15px)) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
 .light-mode .category-header {
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
@@ -171,9 +181,25 @@
     border: 1px solid #f0f0f0;
 }
 
+/* Light Mode with Background Image - Transparent Tool Cards */
+.light-mode.has-bg-image .tool-card {
+    background: rgba(255, 255, 255, calc(var(--content-opacity, 0.85) + 0.1));
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(calc(var(--blur-amount, 10px) * 0.5));
+    -webkit-backdrop-filter: blur(calc(var(--blur-amount, 10px) * 0.5));
+}
+
 .dark-mode .tool-card {
     background: #1f1f1f;
     border: 1px solid #303030;
+}
+
+/* Dark Mode with Background Image - Transparent Tool Cards */
+.dark-mode.has-bg-image .tool-card {
+    background: rgba(30, 30, 45, calc(var(--content-opacity, 0.85) + 0.1));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(calc(var(--blur-amount, 10px) * 0.5));
+    -webkit-backdrop-filter: blur(calc(var(--blur-amount, 10px) * 0.5));
 }
 
 .tool-card:hover {
