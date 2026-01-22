@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 // Layouts
 import AdminLayout from '../layouts/admin-layout';
 import AIToolsLayout from '../layouts/ai-tools-layout';
+import ImageToolsLayout from '../layouts/image-tools-layout';
 
 // Frontend Pages - AI Tools Home
 import AIToolsHome from '../pages/frontend/ai-tools-home';
@@ -12,11 +13,16 @@ import { About, Articles, ArticleDetail, AIChat } from '../pages/frontend';
 // Admin Pages
 import { Dashboard, UserList, Settings, ArticleManage, GPTChat, KnowledgeAdmin, CategoryAdmin } from '../pages/admin';
 import KnowledgeViewer from '../pages/frontend/knowledge';
+import ImageCompress from '../pages/frontend/image-tools/compress';
+import ImageCrop from '../pages/frontend/image-tools/crop';
+import ImageResize from '../pages/frontend/image-tools/resize';
+import ImageConvert from '../pages/frontend/image-tools/convert';
+import ImageWatermark from '../pages/frontend/image-tools/watermark';
 
 const AppRouter: React.FC = () => {
     return (
         <Routes>
-            {/* 前台 AI 工具导航路由 */}
+            {/* 前台 AI 工具导航路由 (通用) */}
             <Route path="/" element={<AIToolsLayout />}>
                 <Route index element={<AIToolsHome />} />
                 <Route path="about" element={<About />} />
@@ -24,6 +30,17 @@ const AppRouter: React.FC = () => {
                 <Route path="article/:id" element={<ArticleDetail />} />
                 <Route path="ai-chat" element={<AIChat />} />
                 <Route path="docs" element={<KnowledgeViewer />} />
+            </Route>
+
+            {/* 图片工具专区 (独立布局) */}
+            <Route path="/tools/image" element={<ImageToolsLayout />}>
+                <Route index element={<ImageCompress />} />
+                <Route path="compress" element={<ImageCompress />} />
+                <Route path="crop" element={<ImageCrop />} />
+                <Route path="resize" element={<ImageResize />} />
+                <Route path="convert" element={<ImageConvert />} />
+                <Route path="watermark" element={<ImageWatermark />} />
+                <Route path="*" element={<ImageCompress />} />
             </Route>
 
             {/* 后台管理路由 */}

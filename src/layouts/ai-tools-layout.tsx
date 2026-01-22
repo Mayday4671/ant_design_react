@@ -45,6 +45,7 @@ const sidebarCategories = [
 // ========== 顶部导航链接 ==========
 const topNavLinks = [
     { key: '/', label: 'AI工具导航' },
+    { key: '/tools/image', label: '图片工具' },
     { key: '/articles', label: '每日AI资讯' },
     { key: '/docs', label: '项目文档' },
     { key: '/about', label: '关于我们' },
