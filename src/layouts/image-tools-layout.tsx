@@ -17,7 +17,11 @@ import {
     SettingOutlined,
     GithubOutlined,
     BulbOutlined,
-    StarOutlined
+    StarOutlined,
+    CodeOutlined,
+    FileImageOutlined,
+    AimOutlined,
+    AppstoreOutlined
 } from '@ant-design/icons';
 import { useAppTheme } from '../contexts/theme-context';
 import '../assets/styles/layouts/ai-tools-layout.css'; // Reuse existing styles
@@ -86,6 +90,26 @@ const ImageToolsLayout: React.FC = () => {
             key: '/tools/image/watermark',
             icon: <PictureOutlined />,
             label: '图片水印',
+        },
+        {
+            key: '/tools/image/base64',
+            icon: <CodeOutlined />,
+            label: '图片Base64',
+        },
+        {
+            key: '/tools/image/to-ico',
+            icon: <FileImageOutlined />,
+            label: '图片转ICO',
+        },
+        {
+            key: '/tools/image/color-picker',
+            icon: <AimOutlined />,
+            label: '图片吸色',
+        },
+        {
+            key: '/tools/image/grid-crop',
+            icon: <AppstoreOutlined />,
+            label: '九宫格切图',
         },
         {
             key: '/tools/image/bg-remove',

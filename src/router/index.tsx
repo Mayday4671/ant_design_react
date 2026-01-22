@@ -18,6 +18,11 @@ import ImageCrop from '../pages/frontend/image-tools/crop';
 import ImageResize from '../pages/frontend/image-tools/resize';
 import ImageConvert from '../pages/frontend/image-tools/convert';
 import ImageWatermark from '../pages/frontend/image-tools/watermark';
+import ImageBase64 from '../pages/frontend/image-tools/base64';
+import ImageToIco from '../pages/frontend/image-tools/to-ico';
+import ImageColorPicker from '../pages/frontend/image-tools/color-picker';
+import ImageGridCrop from '../pages/frontend/image-tools/grid-crop';
+import ImageBgRemove from '../pages/frontend/image-tools/bg-remove';
 
 const AppRouter: React.FC = () => {
     return (
@@ -40,6 +45,11 @@ const AppRouter: React.FC = () => {
                 <Route path="resize" element={<ImageResize />} />
                 <Route path="convert" element={<ImageConvert />} />
                 <Route path="watermark" element={<ImageWatermark />} />
+                <Route path="base64" element={<ImageBase64 />} />
+                <Route path="to-ico" element={<ImageToIco />} />
+                <Route path="color-picker" element={<ImageColorPicker />} />
+                <Route path="grid-crop" element={<ImageGridCrop />} />
+                <Route path="bg-remove" element={<ImageBgRemove />} />
                 <Route path="*" element={<ImageCompress />} />
             </Route>
 
