@@ -145,7 +145,7 @@ const ImageToolsLayout: React.FC = () => {
                 <Layout
                     className="ai-nav-main"
                     style={{
-                        background: isDarkMode ? '#141414' : '#f0f2f5'
+                        background: 'transparent'
                     }}
                 >
                     {/* 顶部导航 */}

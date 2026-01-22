@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, Button, Row, Col, Typography, Radio, Space, Slider, Card } from 'antd';
-import { InboxOutlined, DownloadOutlined, RedoOutlined, FileImageOutlined } from '@ant-design/icons';
+import { InboxOutlined, DownloadOutlined, RedoOutlined } from '@ant-design/icons';
 
 const { Dragger } = Upload;
 const { Title, Text } = Typography;
@@ -67,33 +67,34 @@ const ImageConvert: React.FC = () => {
                 </Text>
             </div>
 
-            <Row gutter={[48, 24]}>
-                <Col xs={24} lg={12}>
-                    <Card title="1. 上传图片" bordered={false} bodyStyle={{ minHeight: 400 }}>
+            <Row gutter={24}>
+                <Col xs={24} lg={10}>
+                    <Card title="1. 上传图片" bordered={true} bodyStyle={{ padding: 24, minHeight: 400 }}>
                         {!imgSrc ? (
                             <Dragger
                                 accept="image/*"
                                 showUploadList={false}
                                 beforeUpload={onSelectFile}
                                 style={{
-                                    padding: '48px 0',
-                                    background: 'transparent',
+                                    padding: '60px 0',
+                                    background: 'var(--color-bg-layout)',
+                                    borderRadius: 12,
                                     border: '2px dashed var(--color-border)',
-                                    borderRadius: 8
                                 }}
                             >
                                 <p className="ant-upload-drag-icon">
-                                    <InboxOutlined style={{ color: '#1677ff', fontSize: 48 }} />
+                                    <InboxOutlined style={{ color: '#1677ff', fontSize: 64 }} />
                                 </p>
-                                <p className="ant-upload-text">点击或拖拽图片到此处</p>
+                                <p className="ant-upload-text" style={{ fontSize: 16, marginTop: 16 }}>点击或拖拽图片到此处</p>
                             </Dragger>
                         ) : (
                             <div style={{
                                 border: '1px solid var(--color-border)',
-                                padding: 16,
-                                borderRadius: 8,
-                                background: 'rgba(0,0,0,0.02)',
-                                textAlign: 'center'
+                                padding: 24,
+                                borderRadius: 12,
+                                background: 'var(--color-bg-layout)',
+                                textAlign: 'center',
+                                position: 'relative'
                             }}>
                                 <img
                                     ref={imgRef}
@@ -101,21 +102,36 @@ const ImageConvert: React.FC = () => {
                                     style={{ maxWidth: '100%', maxHeight: 300, objectFit: 'contain' }}
                                     onLoad={convertImage} // Auto convert initial
                                 />
-                                <div style={{ marginTop: 16 }}>
-                                    <Button onClick={() => setImgSrc('')} icon={<RedoOutlined />}>重新上传</Button>
+                                <div style={{ marginTop: 24 }}>
+                                    <Button onClick={() => setImgSrc('')} icon={<RedoOutlined />} size="middle">重新上传</Button>
                                 </div>
                             </div>
                         )}
                     </Card>
                 </Col>
 
-                <Col xs={24} lg={12}>
-                    <Card title="2. 转换设置" bordered={false} bodyStyle={{ minHeight: 400 }}>
-                        <div style={{ padding: 24, background: 'var(--color-bg-layout)', borderRadius: 8 }}>
+                <Col xs={24} lg={14}>
+                    <Card title="2. 转换设置与结果" bordered={true} bodyStyle={{ padding: 24, minHeight: 400 }}>
+                        {!imgSrc ? (
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 16,
+                                color: 'var(--color-text-tertiary)',
+                                height: 300,
+                                background: 'var(--color-bg-layout)',
+                                borderRadius: 12
+                            }}>
+                                <InboxOutlined style={{ fontSize: 48, opacity: 0.2 }} />
+                                <div>请先在左侧上传图片</div>
+                            </div>
+                        ) : (
                             <Space direction="vertical" size="large" style={{ width: '100%' }}>
                                 <div>
                                     <Text strong>目标格式</Text>
-                                    <div style={{ marginTop: 8 }}>
+                                    <div style={{ marginTop: 12 }}>
                                         <Radio.Group
                                             value={targetFormat}
                                             onChange={e => {
@@ -123,6 +139,7 @@ const ImageConvert: React.FC = () => {
                                                 setTimeout(convertImage, 100);
                                             }}
                                             buttonStyle="solid"
+                                            size="large"
                                         >
                                             <Radio.Button value="png">PNG</Radio.Button>
                                             <Radio.Button value="jpeg">JPG</Radio.Button>
@@ -151,19 +168,22 @@ const ImageConvert: React.FC = () => {
                                     </div>
                                 )}
 
-                                <Button
-                                    type="primary"
-                                    icon={<DownloadOutlined />}
-                                    size="large"
-                                    href={convertedUrl}
-                                    download={`${fileName}_converted.${targetFormat === 'jpeg' ? 'jpg' : targetFormat}`}
-                                    disabled={!convertedUrl}
-                                    block
-                                >
-                                    下载 {targetFormat.toUpperCase()}
-                                </Button>
+                                <div style={{ borderTop: '1px solid var(--color-border-secondary)', paddingTop: 24, marginTop: 16 }}>
+                                    <Button
+                                        type="primary"
+                                        icon={<DownloadOutlined />}
+                                        size="large"
+                                        href={convertedUrl}
+                                        download={`${fileName}_converted.${targetFormat === 'jpeg' ? 'jpg' : targetFormat}`}
+                                        disabled={!convertedUrl}
+                                        block
+                                        style={{ height: 48, fontSize: 16 }}
+                                    >
+                                        下载 {targetFormat.toUpperCase()}
+                                    </Button>
+                                </div>
                             </Space>
-                        </div>
+                        )}
                     </Card>
                 </Col>
             </Row>

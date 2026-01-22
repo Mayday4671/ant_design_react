@@ -92,14 +92,13 @@ const ImageWatermark: React.FC = () => {
                 </Text>
             </div>
 
-            <Row gutter={[48, 24]}>
+            <Row gutter={24}>
                 <Col xs={24} lg={8}>
-                    <Card title="设置水印" bordered={false} bodyStyle={{ minHeight: 400 }}>
-
+                    <Card title="1. 水印设置" bordered={true} style={{ height: '100%' }} bodyStyle={{ padding: 24, minHeight: 400 }}>
                         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                             <div>
                                 <Text>水印文字</Text>
-                                <Input value={text} onChange={e => setText(e.target.value)} />
+                                <Input value={text} onChange={e => setText(e.target.value)} style={{ marginTop: 8 }} />
                             </div>
 
                             <div>
@@ -115,7 +114,9 @@ const ImageWatermark: React.FC = () => {
                             <div>
                                 <Text>颜色</Text>
                                 <br />
-                                <ColorPicker value={color} onChange={(c, hex) => setColor(hex)} showText />
+                                <div style={{ marginTop: 8 }}>
+                                    <ColorPicker value={color} onChange={(_, hex) => setColor(hex)} showText />
+                                </div>
                             </div>
 
                             <div>
@@ -130,48 +131,50 @@ const ImageWatermark: React.FC = () => {
                         </Space>
 
                         {imgSrc && (
-                            <Button
-                                type="primary"
-                                icon={<DownloadOutlined />}
-                                size="large"
-                                onClick={handleDownload}
-                                style={{ marginTop: 32 }}
-                                block
-                            >
-                                下载水印图片
-                            </Button>
+                            <div style={{ marginTop: 32 }}>
+                                <Button
+                                    type="primary"
+                                    icon={<DownloadOutlined />}
+                                    size="large"
+                                    onClick={handleDownload}
+                                    style={{ height: 48, fontSize: 16 }}
+                                    block
+                                >
+                                    下载水印图片
+                                </Button>
+                            </div>
                         )}
                     </Card>
                 </Col>
 
                 <Col xs={24} lg={16}>
-                    <Card title="预览" bordered={false} bodyStyle={{ minHeight: 400 }}>
-
+                    <Card title="2. 预览" bordered={true} style={{ height: '100%' }} bodyStyle={{ padding: 24, minHeight: 600 }}>
                         {!imgSrc ? (
                             <Dragger
                                 accept="image/*"
                                 showUploadList={false}
                                 beforeUpload={onSelectFile}
                                 style={{
-                                    padding: '48px 0',
-                                    background: 'transparent',
+                                    padding: '60px 0',
+                                    background: 'var(--color-bg-layout)',
+                                    borderRadius: 12,
                                     border: '2px dashed var(--color-border)',
-                                    borderRadius: 8
                                 }}
                             >
                                 <p className="ant-upload-drag-icon">
-                                    <InboxOutlined style={{ color: '#1677ff', fontSize: 48 }} />
+                                    <InboxOutlined style={{ color: '#1677ff', fontSize: 64 }} />
                                 </p>
-                                <p className="ant-upload-text">点击或拖拽图片到此处</p>
+                                <p className="ant-upload-text" style={{ fontSize: 16, marginTop: 16 }}>点击或拖拽图片到此处</p>
                             </Dragger>
                         ) : (
                             <div style={{
                                 border: '1px solid var(--color-border)',
-                                padding: 16,
-                                borderRadius: 8,
-                                background: 'rgba(0,0,0,0.02)',
+                                padding: 24,
+                                borderRadius: 12,
+                                background: 'var(--color-bg-layout)',
                                 textAlign: 'center',
-                                overflow: 'auto'
+                                overflow: 'auto',
+                                position: 'relative'
                             }}>
                                 {/* Hidden source image */}
                                 <img
@@ -182,10 +185,10 @@ const ImageWatermark: React.FC = () => {
                                 />
                                 <canvas
                                     ref={canvasRef}
-                                    style={{ maxWidth: '100%', height: 'auto', border: '1px solid #ddd' }}
+                                    style={{ maxWidth: '100%', height: 'auto', border: '1px solid #ddd', borderRadius: 4, background: '#fff' }}
                                 />
-                                <div style={{ marginTop: 16 }}>
-                                    <Button onClick={() => setImgSrc('')} icon={<RedoOutlined />}>重新上传</Button>
+                                <div style={{ marginTop: 24 }}>
+                                    <Button onClick={() => setImgSrc('')} icon={<RedoOutlined />} size="middle">重新上传</Button>
                                 </div>
                             </div>
                         )}

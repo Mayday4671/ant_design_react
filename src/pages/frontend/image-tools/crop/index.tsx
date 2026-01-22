@@ -28,6 +28,8 @@ const ImageCrop: React.FC = () => {
     const [crop, setCrop] = useState<Crop>();
     const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
     const [aspect, setAspect] = useState<number | undefined>(undefined);
+    const [scale, setScale] = useState(1);
+    const [rotate, setRotate] = useState(0);
     const imgRef = useRef<HTMLImageElement>(null);
     const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -113,7 +115,7 @@ const ImageCrop: React.FC = () => {
             }
         },
         100,
-        [completedCrop],
+        [completedCrop, scale, rotate],
     );
 
     return (
@@ -121,114 +123,113 @@ const ImageCrop: React.FC = () => {
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
                 <Title level={2}>在线图片裁剪</Title>
                 <Text type="secondary">
-                    自由裁剪或按比例裁剪，制作头像、封面图的首选工具。
+                    上传图片并按需调整裁剪区域，支持自由比例和固定比例。
                 </Text>
             </div>
 
-            <Row gutter={[48, 24]}>
+            <Row gutter={24}>
                 <Col xs={24} lg={14}>
-                    <Card title="1. 上传与裁剪" bordered={false} bodyStyle={{ minHeight: 400 }}>
+                    <Card title="1. 上传与裁剪" bordered={true} bodyStyle={{ padding: 24, minHeight: 500 }}>
                         {!imgSrc ? (
                             <Dragger
                                 accept="image/*"
                                 showUploadList={false}
                                 beforeUpload={onSelectFile}
                                 style={{
-                                    padding: '48px 0',
-                                    background: 'var(--color-bg-container)',
+                                    padding: '60px 0',
+                                    background: 'var(--color-bg-layout)',
+                                    borderRadius: 12,
                                     border: '2px dashed var(--color-border)',
-                                    borderRadius: 8
                                 }}
                             >
                                 <p className="ant-upload-drag-icon">
-                                    <InboxOutlined style={{ color: '#1677ff', fontSize: 48 }} />
+                                    <InboxOutlined style={{ color: '#1677ff', fontSize: 64 }} />
                                 </p>
-                                <p className="ant-upload-text">点击或拖拽图片到此处</p>
+                                <p className="ant-upload-text" style={{ fontSize: 16, marginTop: 16 }}>点击或拖拽图片到此处</p>
                             </Dragger>
                         ) : (
                             <div style={{
-                                border: '1px solid var(--color-border)',
-                                padding: 16,
+                                background: 'var(--color-modal-mask)', // Darker background for crop focus
                                 borderRadius: 8,
-                                background: 'var(--color-bg-layout)',
-                                textAlign: 'center'
+                                padding: 24,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                minHeight: 400
                             }}>
                                 <ReactCrop
                                     crop={crop}
                                     onChange={(_, percentCrop) => setCrop(percentCrop)}
                                     onComplete={(c) => setCompletedCrop(c)}
-                                    aspect={aspect}
+                                    aspect={undefined} // Free crop by default
+                                    style={{ maxWidth: '100%' }}
                                 >
                                     <img
                                         ref={imgRef}
                                         alt="Crop me"
                                         src={imgSrc}
-                                        style={{ maxWidth: '100%', maxHeight: 500 }}
+                                        style={{ transform: `scale(${scale}) rotate(${rotate}deg)`, maxHeight: '60vh', maxWidth: '100%' }}
                                         onLoad={onImageLoad}
                                     />
                                 </ReactCrop>
-                                <div style={{ marginTop: 16 }}>
-                                    <Button onClick={() => setImgSrc('')} icon={<RedoOutlined />}>重新上传</Button>
-                                </div>
                             </div>
                         )}
 
                         {imgSrc && (
-                            <div style={{ marginTop: 24 }}>
-                                <Text strong>裁剪比例：</Text>
-                                <Space wrap>
-                                    <Button type={!aspect ? 'primary' : 'default'} onClick={() => setAspect(undefined)}>自由</Button>
-                                    <Button type={aspect === 1 ? 'primary' : 'default'} onClick={() => setAspect(1)}>1:1 (头像)</Button>
-                                    <Button type={aspect === 16 / 9 ? 'primary' : 'default'} onClick={() => setAspect(16 / 9)}>16:9 (封面)</Button>
-                                    <Button type={aspect === 4 / 3 ? 'primary' : 'default'} onClick={() => setAspect(4 / 3)}>4:3</Button>
-                                </Space>
+                            <div style={{ marginTop: 24, display: 'flex', gap: 16, justifyContent: 'center' }}>
+                                <Button onClick={() => setImgSrc('')} icon={<RedoOutlined />}>重新上传</Button>
+                                {/* Add more controls like rotate here if needed later */}
                             </div>
                         )}
                     </Card>
                 </Col>
 
                 <Col xs={24} lg={10}>
-                    <Card title="2. 实时预览与下载" bordered={false} bodyStyle={{ minHeight: 400 }}>
-                        <div style={{
-                            flex: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: 'var(--color-bg-layout)',
-                            borderRadius: 8,
-                            minHeight: 300,
-                            border: '1px solid var(--color-border-secondary)',
-                            overflow: 'hidden'
-                        }}>
-                            {completedCrop ? (
-                                <canvas
-                                    ref={previewCanvasRef}
-                                    style={{
-                                        border: '1px solid black',
-                                        objectFit: 'contain',
-                                        maxWidth: '100%',
-                                        maxHeight: 300,
-                                    }}
-                                />
-                            ) : (
-                                <div style={{ color: 'var(--color-text-tertiary)' }}>
-                                    {imgSrc ? '请在左侧选择裁剪区域' : '请先上传图片'}
+                    <Card title="2. 预览结果" bordered={true} bodyStyle={{ padding: 24, minHeight: 500 }} extra={<Button type="primary" icon={<DownloadOutlined />} onClick={handleDownload} disabled={!completedCrop}>下载结果</Button>}>
+                        {!!completedCrop ? (
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center'
+                            }}>
+                                <div style={{
+                                    border: '1px solid var(--color-border)',
+                                    background: 'var(--color-bg-layout)', // Checkerboard ideally
+                                    borderRadius: 8,
+                                    overflow: 'hidden',
+                                    marginBottom: 16,
+                                    maxWidth: '100%'
+                                }}>
+                                    <canvas
+                                        ref={previewCanvasRef}
+                                        style={{
+                                            border: '1px solid black',
+                                            objectFit: 'contain',
+                                            width: completedCrop.width,
+                                            height: completedCrop.height,
+                                            maxWidth: '100%',
+                                            maxHeight: 400
+                                        }}
+                                    />
                                 </div>
-                            )}
-                        </div>
-
-                        <div style={{ marginTop: 24, textAlign: 'center' }}>
-                            <Button
-                                type="primary"
-                                icon={<DownloadOutlined />}
-                                size="large"
-                                disabled={!completedCrop}
-                                onClick={handleDownload}
-                                block
-                            >
-                                下载裁剪结果
-                            </Button>
-                        </div>
+                                <Text type="secondary">尺寸: {Math.round(completedCrop.width)} x {Math.round(completedCrop.height)} px</Text>
+                            </div>
+                        ) : (
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: 300,
+                                background: 'var(--color-bg-layout)',
+                                borderRadius: 12,
+                                color: 'var(--color-text-tertiary)',
+                                flexDirection: 'column',
+                                gap: 16
+                            }}>
+                                <div style={{ fontSize: 48, opacity: 0.2 }}>🖼️</div>
+                                <div>请在左侧裁剪图片</div>
+                            </div>
+                        )}
                     </Card>
                 </Col>
             </Row>

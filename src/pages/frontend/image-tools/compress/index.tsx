@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Upload, Slider, Button, Row, Col, Descriptions, message, Spin, Alert, Typography } from 'antd';
+import { Upload, Slider, Button, Row, Col, Descriptions, message, Spin, Alert, Typography, Card } from 'antd';
 import { InboxOutlined, DownloadOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import imageCompression from 'browser-image-compression';
 
@@ -91,27 +91,32 @@ const ImageCompress: React.FC = () => {
                 </Text>
             </div>
 
-            <Row gutter={[24, 24]}>
+            <Row gutter={24}>
                 <Col xs={24} lg={10}>
-                    <Card title="上传图片" bordered={false} bodyStyle={{ minHeight: 400 }}>
+                    <Card title="1. 上传图片" bordered={true} bodyStyle={{ padding: 24, minHeight: 400 }}>
                         <Dragger
                             accept="image/*"
                             showUploadList={false}
                             beforeUpload={handleUpload}
-                            style={{ padding: '48px 0', background: 'var(--color-bg-container)' }}
+                            style={{
+                                padding: '60px 0',
+                                background: 'var(--color-bg-layout)',
+                                borderRadius: 12,
+                                border: '2px dashed var(--color-border)',
+                            }}
                         >
                             <p className="ant-upload-drag-icon">
-                                <InboxOutlined style={{ color: '#1677ff', fontSize: 48 }} />
+                                <InboxOutlined style={{ color: '#1677ff', fontSize: 64 }} />
                             </p>
-                            <p className="ant-upload-text">点击或拖拽图片到此处</p>
-                            <p className="ant-upload-hint">
+                            <p className="ant-upload-text" style={{ fontSize: 16, marginTop: 16 }}>点击或拖拽图片到此处</p>
+                            <p className="ant-upload-hint" style={{ color: 'var(--color-text-tertiary)' }}>
                                 支持 JPG, PNG, WebP 等常见格式
                             </p>
                         </Dragger>
 
                         {originalFile && (
                             <div style={{ marginTop: 24 }}>
-                                <Descriptions title="原始文件信息" column={1} bordered size="small">
+                                <Descriptions title="原始文件信息" column={1} size="small" bordered>
                                     <Descriptions.Item label="文件名">{originalFile.name}</Descriptions.Item>
                                     <Descriptions.Item label="原始大小">{formatSize(originalFile.size)}</Descriptions.Item>
                                     <Descriptions.Item label="类型">{originalFile.type}</Descriptions.Item>
@@ -122,25 +127,25 @@ const ImageCompress: React.FC = () => {
                 </Col>
 
                 <Col xs={24} lg={14}>
-                    <Card
-                        title="压缩设置与预览"
-                        bordered={false}
-                        bodyStyle={{ minHeight: 400 }}
-                        extra={originalFile && <Text type="success">已节省 {compressionRate.toFixed(1)}%</Text>}
-                    >
+                    <Card title="2. 压缩设置与预览" bordered={true} bodyStyle={{ padding: 24, minHeight: 400 }} extra={originalFile && <Text type="success" strong>已节省 {compressionRate.toFixed(1)}%</Text>}>
                         {!originalFile ? (
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 height: 300,
-                                color: 'var(--color-text-tertiary)'
+                                background: 'var(--color-bg-layout)',
+                                borderRadius: 12,
+                                color: 'var(--color-text-tertiary)',
+                                flexDirection: 'column',
+                                gap: 16
                             }}>
-                                请先上传图片
+                                <InboxOutlined style={{ fontSize: 48, opacity: 0.2 }} />
+                                <div>请先在左侧上传图片</div>
                             </div>
                         ) : (
                             <>
-                                <div style={{ marginBottom: 32 }}>
+                                <div style={{ marginBottom: 32, padding: '0 12px' }}>
                                     <Text strong>目标大小限制 (MB)</Text>
                                     <Slider
                                         min={0.1}
@@ -150,17 +155,23 @@ const ImageCompress: React.FC = () => {
                                         onChange={setMaxSizeMB}
                                         marks={{ 0.1: '0.1M', 1: '1M', 2: '2M', 5: '5M' }}
                                     />
-                                    <Alert
-                                        message="提示：设置的值越小，压缩率越高，画质可能越低。"
-                                        type="info"
-                                        showIcon
-                                        style={{ marginTop: 12 }}
-                                    />
+                                    <div style={{ marginTop: 12 }}>
+                                        <Alert
+                                            message="提示：设置的值越小，压缩率越高，画质可能越低。"
+                                            type="info"
+                                            showIcon
+                                        />
+                                    </div>
                                 </div>
 
-                                <Card type="inner" title="压缩结果" bordered>
+                                <div style={{
+                                    background: 'var(--color-bg-layout)',
+                                    borderRadius: 12,
+                                    padding: 24,
+                                    border: '1px solid var(--color-border-secondary)'
+                                }}>
                                     <Spin spinning={isCompressing} tip="压缩中...">
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 0' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0 32px' }}>
                                             <div style={{ textAlign: 'center' }}>
                                                 <Text type="secondary">原始大小</Text>
                                                 <div style={{ fontSize: 24, fontWeight: 'bold' }}>
@@ -168,7 +179,7 @@ const ImageCompress: React.FC = () => {
                                                 </div>
                                             </div>
 
-                                            <ArrowRightOutlined style={{ fontSize: 24, color: '#1677ff' }} />
+                                            <ArrowRightOutlined style={{ fontSize: 24, color: '#1677ff', opacity: 0.5 }} />
 
                                             <div style={{ textAlign: 'center' }}>
                                                 <Text type="secondary">压缩后</Text>
@@ -178,21 +189,21 @@ const ImageCompress: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <div style={{ textAlign: 'center', marginTop: 16 }}>
+                                        <div style={{ textAlign: 'center' }}>
                                             {compressedFile && (
                                                 <Button
                                                     type="primary"
                                                     icon={<DownloadOutlined />}
                                                     size="large"
                                                     onClick={handleDownload}
-                                                    block
+                                                    style={{ height: 48, padding: '0 40px', fontSize: 16 }}
                                                 >
                                                     下载压缩后的图片
                                                 </Button>
                                             )}
                                         </div>
                                     </Spin>
-                                </Card>
+                                </div>
                             </>
                         )}
                     </Card>

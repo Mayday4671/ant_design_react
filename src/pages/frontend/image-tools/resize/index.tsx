@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Button, Row, Col, Typography, InputNumber, Switch, Space, Radio, message, Card } from 'antd';
+import { Upload, Button, Row, Col, Typography, InputNumber, Switch, Space, Radio, Card } from 'antd';
 import { InboxOutlined, DownloadOutlined, RedoOutlined, ColumnHeightOutlined, ColumnWidthOutlined } from '@ant-design/icons';
 
 const { Dragger } = Upload;
@@ -32,7 +32,7 @@ const ImageResize: React.FC = () => {
         setOriginalDimensions({ width: naturalWidth, height: naturalHeight });
         setDimensions({ width: Math.round(naturalWidth * 0.5), height: Math.round(naturalHeight * 0.5) });
         setPercentage(50);
-        handleResize(naturalWidth, naturalHeight, 'percentage', 50, { width: 0, height: 0 }, true);
+        handleResize(naturalWidth, naturalHeight, 'percentage', 50, { width: 0, height: 0 });
     };
 
     const handleResize = (
@@ -40,8 +40,7 @@ const ImageResize: React.FC = () => {
         origH: number,
         type: 'percentage' | 'dimensions',
         pct: number,
-        dims: { width: number, height: number },
-        lock: boolean
+        dims: { width: number, height: number }
     ) => {
         let newW = 0;
         let newH = 0;
@@ -78,7 +77,7 @@ const ImageResize: React.FC = () => {
                 width: Math.round(originalDimensions.width * scale),
                 height: Math.round(originalDimensions.height * scale)
             });
-            handleResize(originalDimensions.width, originalDimensions.height, 'percentage', percentage, dimensions, lockAspectRatio);
+            handleResize(originalDimensions.width, originalDimensions.height, 'percentage', percentage, dimensions);
         }
     }, [percentage, resizeType]);
 
@@ -96,11 +95,11 @@ const ImageResize: React.FC = () => {
             }
         }
         setDimensions(newDims);
-        handleResize(originalDimensions.width, originalDimensions.height, 'dimensions', percentage, newDims, lockAspectRatio);
+        handleResize(originalDimensions.width, originalDimensions.height, 'dimensions', percentage, newDims);
     };
 
     const triggerResize = () => {
-        handleResize(originalDimensions.width, originalDimensions.height, resizeType, percentage, dimensions, lockAspectRatio);
+        handleResize(originalDimensions.width, originalDimensions.height, resizeType, percentage, dimensions);
     };
 
     return (
@@ -112,31 +111,31 @@ const ImageResize: React.FC = () => {
                 </Text>
             </div>
 
-            <Row gutter={[48, 24]}>
+            <Row gutter={24}>
                 <Col xs={24} lg={10}>
-                    <Card title="1. 上传与设置" bordered={false} bodyStyle={{ minHeight: 400 }}>
+                    <Card title="1. 上传与设置" bordered={true} bodyStyle={{ padding: 24, minHeight: 400 }}>
                         {!imgSrc ? (
                             <Dragger
                                 accept="image/*"
                                 showUploadList={false}
                                 beforeUpload={onSelectFile}
                                 style={{
-                                    padding: '48px 0',
-                                    background: 'var(--color-bg-container)',
+                                    padding: '60px 0',
+                                    background: 'var(--color-bg-layout)',
+                                    borderRadius: 12,
                                     border: '2px dashed var(--color-border)',
-                                    borderRadius: 8
                                 }}
                             >
                                 <p className="ant-upload-drag-icon">
-                                    <InboxOutlined style={{ color: '#1677ff', fontSize: 48 }} />
+                                    <InboxOutlined style={{ color: '#1677ff', fontSize: 64 }} />
                                 </p>
-                                <p className="ant-upload-text">点击或拖拽图片到此处</p>
+                                <p className="ant-upload-text" style={{ fontSize: 16, marginTop: 16 }}>点击或拖拽图片到此处</p>
                             </Dragger>
                         ) : (
                             <div style={{
                                 border: '1px solid var(--color-border)',
-                                padding: 16,
-                                borderRadius: 8,
+                                padding: 24,
+                                borderRadius: 12,
                                 background: 'var(--color-bg-layout)',
                                 textAlign: 'center',
                                 position: 'relative'
@@ -155,15 +154,14 @@ const ImageResize: React.FC = () => {
                         )}
 
                         {imgSrc && (
-                            <div style={{ marginTop: 32 }}>
-                                <Title level={5} style={{ marginBottom: 16 }}>2. 缩放设置</Title>
+                            <div style={{ marginTop: 24 }}>
+                                <div style={{ marginBottom: 16 }}><Text strong>调整选项</Text></div>
                                 <Space direction="vertical" style={{ width: '100%' }} size="large">
                                     <Radio.Group value={resizeType} onChange={e => {
                                         setResizeType(e.target.value);
-                                        // triggering effect by state change
-                                    }} buttonStyle="solid">
-                                        <Radio.Button value="percentage">按百分比</Radio.Button>
-                                        <Radio.Button value="dimensions">按像素</Radio.Button>
+                                    }} buttonStyle="solid" style={{ width: '100%', textAlign: 'center' }}>
+                                        <Radio.Button value="percentage" style={{ width: '50%' }}>按百分比</Radio.Button>
+                                        <Radio.Button value="dimensions" style={{ width: '50%' }}>按像素</Radio.Button>
                                     </Radio.Group>
 
                                     {resizeType === 'percentage' ? (
@@ -211,7 +209,7 @@ const ImageResize: React.FC = () => {
                                         <Switch checked={lockAspectRatio} onChange={setLockAspectRatio} />
                                     </div>
 
-                                    <Button type="primary" onClick={triggerResize} block>应用调整</Button>
+                                    <Button type="primary" onClick={triggerResize} block size="large">应用调整</Button>
                                 </Space>
                             </div>
                         )}
@@ -219,21 +217,33 @@ const ImageResize: React.FC = () => {
                 </Col>
 
                 <Col xs={24} lg={14}>
-                    <Card title="3. 结果预览" bordered={false} bodyStyle={{ minHeight: 400 }}>
+                    <Card title="2. 结果预览" bordered={true} bodyStyle={{ padding: 24, minHeight: 400 }}>
                         <div style={{
                             flex: 1,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             background: 'var(--color-bg-layout)',
-                            borderRadius: 8,
-                            minHeight: 400,
+                            borderRadius: 12,
+                            minHeight: 300,
                             border: '1px solid var(--color-border-secondary)',
                             overflow: 'hidden',
-                            padding: 16
+                            padding: 16,
+                            position: 'relative'
                         }}>
-                            <canvas ref={canvasRef} style={{ maxWidth: '100%', maxHeight: 400, objectFit: 'contain' }} />
-                            {!imgSrc && <Text type="secondary">请先上传图片</Text>}
+                            {!imgSrc && (
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: 16,
+                                    color: 'var(--color-text-tertiary)'
+                                }}>
+                                    <InboxOutlined style={{ fontSize: 48, opacity: 0.2 }} />
+                                    <div>请先上传图片</div>
+                                </div>
+                            )}
+                            <canvas ref={canvasRef} style={{ maxWidth: '100%', maxHeight: 400, objectFit: 'contain', display: imgSrc ? 'block' : 'none' }} />
                         </div>
 
                         {processedImgSrc && (
@@ -248,6 +258,7 @@ const ImageResize: React.FC = () => {
                                     href={processedImgSrc}
                                     download={`resized_${dimensions.width}x${dimensions.height}.png`}
                                     block
+                                    style={{ height: 48, fontSize: 16 }}
                                 >
                                     下载图片
                                 </Button>
