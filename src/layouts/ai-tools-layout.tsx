@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Input, Typography, ConfigProvider } from 'antd';
+import { Layout, Menu, Input, Typography, ConfigProvider, theme } from 'antd';
 import {
     HomeOutlined, MessageOutlined, PictureOutlined, EditOutlined,
     VideoCameraOutlined, AudioOutlined, CodeOutlined, FileTextOutlined,
@@ -46,6 +46,7 @@ const sidebarCategories = [
 const topNavLinks = [
     { key: '/', label: 'AI工具导航' },
     { key: '/tools/image', label: '图片工具' },
+    { key: '/tools/java', label: 'Java工具' },
     { key: '/articles', label: '每日AI资讯' },
     { key: '/docs', label: '项目文档' },
     { key: '/about', label: '关于我们' },
@@ -58,6 +59,7 @@ const AIToolsLayout: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { isDarkMode, setIsDarkMode, getAntdTheme, frontendBackgroundImage, contentOpacity } = useAppTheme();
+    const { token } = theme.useToken(); // 获取当前主题 token
     const [searchValue, setSearchValue] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -131,8 +133,29 @@ const AIToolsLayout: React.FC = () => {
         }),
         []);
 
+    // 动态滚动条样式
+    const scrollbarStyles = `
+        .theme-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .theme-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .theme-scrollbar::-webkit-scrollbar-thumb {
+            background-color: ${token.colorFillSecondary};
+            border-radius: 4px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        .theme-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: ${token.colorPrimary};
+        }
+    `;
+
     return (
         <ConfigProvider theme={themeConfig}>
+            <style>{scrollbarStyles}</style>
             <Layout
                 className={`ai-nav-layout ${isDarkMode ? 'dark-mode' : 'light-mode'} ${frontendBackgroundImage ? 'has-bg-image' : ''}`}
                 style={{
@@ -292,7 +315,7 @@ const AIToolsLayout: React.FC = () => {
                     )}
 
                     {/* 内容区 */}
-                    <Content className="main-content" style={{ overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column', padding: 14 }}>
+                    <Content className={`main-content theme-scrollbar`} style={{ overflowY: 'auto', height: '100%', display: 'flex', flexDirection: 'column', padding: 14 }}>
                         <Outlet context={{ searchValue, selectedCategory }} />
                     </Content>
                 </Layout>

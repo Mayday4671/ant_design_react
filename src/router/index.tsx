@@ -5,6 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import AdminLayout from '../layouts/admin-layout';
 import AIToolsLayout from '../layouts/ai-tools-layout';
 import ImageToolsLayout from '../layouts/image-tools-layout';
+import JavaToolsLayout from '../layouts/java-tools-layout';
 
 // Frontend Pages - AI Tools Home
 import AIToolsHome from '../pages/frontend/ai-tools-home';
@@ -23,6 +24,8 @@ import ImageToIco from '../pages/frontend/image-tools/to-ico';
 import ImageColorPicker from '../pages/frontend/image-tools/color-picker';
 import ImageGridCrop from '../pages/frontend/image-tools/grid-crop';
 import ImageBgRemove from '../pages/frontend/image-tools/bg-remove';
+import SqlToJson from '../pages/frontend/java-tools/sql-to-json';
+import SqlToBean from '../pages/frontend/java-tools/sql-to-bean';
 
 const AppRouter: React.FC = () => {
     return (
@@ -51,6 +54,14 @@ const AppRouter: React.FC = () => {
                 <Route path="grid-crop" element={<ImageGridCrop />} />
                 <Route path="bg-remove" element={<ImageBgRemove />} />
                 <Route path="*" element={<ImageCompress />} />
+            </Route>
+
+            {/* Java 工具专区 */}
+            <Route path="/tools/java" element={<JavaToolsLayout />}>
+                <Route index element={<SqlToJson />} />
+                <Route path="sql-json" element={<SqlToJson />} />
+                <Route path="sql-to-bean" element={<SqlToBean />} />
+                <Route path="*" element={<SqlToJson />} />
             </Route>
 
             {/* 后台管理路由 */}

@@ -35,3 +35,50 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
+/* 悬浮显示滚动条 (Hover Scrollbar) */
+.hover-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.hover-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.hover-scrollbar::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 3px;
+    transition: background 0.3s;
+}
+
+.hover-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .hover-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* 针对 TextArea 的特殊处理 (Ant Design TextAreawrapper) */
+.hover-scrollbar textarea::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.hover-scrollbar textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.hover-scrollbar textarea::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 3px;
+}
+
+.hover-scrollbar textarea:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .hover-scrollbar textarea:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}

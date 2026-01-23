@@ -1,27 +1,14 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Button, Typography, Breadcrumb, ConfigProvider, theme } from 'antd';
+import { Layout, Menu, Typography, Breadcrumb, ConfigProvider, theme } from 'antd';
 import {
-    CompressOutlined,
-    ScissorOutlined,
-    SwapOutlined,
-    FormatPainterOutlined,
-    BgColorsOutlined,
-    PictureOutlined,
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
     RocketOutlined,
-    HomeOutlined,
-    FireOutlined,
-    TeamOutlined,
-    SettingOutlined,
-    GithubOutlined,
+    PictureOutlined,
+    CodeOutlined,
     BulbOutlined,
     StarOutlined,
-    CodeOutlined,
-    FileImageOutlined,
-    AimOutlined,
-    AppstoreOutlined,
+    SettingOutlined,
+    ConsoleSqlOutlined,
     CoffeeOutlined
 } from '@ant-design/icons';
 import { useAppTheme } from '../contexts/theme-context';
@@ -40,7 +27,7 @@ const topNavLinks = [
     { key: '/about', label: '关于我们' },
 ];
 
-const ImageToolsLayout: React.FC = () => {
+const JavaToolsLayout: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [collapsed, setCollapsed] = useState(false);
@@ -69,55 +56,16 @@ const ImageToolsLayout: React.FC = () => {
     // Menu Items Configuration
     const menuItems = [
         {
-            key: '/tools/image/compress',
-            icon: <CompressOutlined />,
-            label: '图片压缩',
+            key: '/tools/java/sql-json',
+            icon: <ConsoleSqlOutlined />,
+            label: 'SQL 转 JSON',
         },
         {
-            key: '/tools/image/crop',
-            icon: <ScissorOutlined />,
-            label: '图片裁剪',
-        },
-        {
-            key: '/tools/image/resize',
-            icon: <SwapOutlined />,
-            label: '修改尺寸',
-        },
-        {
-            key: '/tools/image/convert',
-            icon: <FormatPainterOutlined />,
-            label: '格式转换',
-        },
-        {
-            key: '/tools/image/watermark',
-            icon: <PictureOutlined />,
-            label: '图片水印',
-        },
-        {
-            key: '/tools/image/base64',
+            key: '/tools/java/sql-to-bean',
             icon: <CodeOutlined />,
-            label: '图片Base64',
+            label: 'SQL 转 Java Bean',
         },
-        {
-            key: '/tools/image/to-ico',
-            icon: <FileImageOutlined />,
-            label: '图片转ICO',
-        },
-        {
-            key: '/tools/image/color-picker',
-            icon: <AimOutlined />,
-            label: '图片吸色',
-        },
-        {
-            key: '/tools/image/grid-crop',
-            icon: <AppstoreOutlined />,
-            label: '九宫格切图',
-        },
-        {
-            key: '/tools/image/bg-remove',
-            icon: <BgColorsOutlined />,
-            label: '一键抠图',
-        },
+        // Future Java tools can go here
     ];
 
     // Find current active menu item's label for breadcrumb
@@ -148,8 +96,8 @@ const ImageToolsLayout: React.FC = () => {
                     <div className="sider-inner">
                         {/* Logo */}
                         <div className="sider-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-                            <PictureOutlined className="logo-icon" style={{ color: '#1890ff' }} />
-                            {!collapsed && <Title level={4} className="logo-text">图片工具箱</Title>}
+                            <CoffeeOutlined className="logo-icon" style={{ color: '#faad14' }} />
+                            {!collapsed && <Title level={4} className="logo-text">Java工具箱</Title>}
                         </div>
 
                         {/* 分类菜单 */}
@@ -162,8 +110,6 @@ const ImageToolsLayout: React.FC = () => {
                                 onClick={({ key }) => navigate(key)}
                             />
                         </div>
-
-                        {/* 底部 Footer 已移除 */}
                     </div>
                 </Sider>
 
@@ -186,15 +132,15 @@ const ImageToolsLayout: React.FC = () => {
                         >
                             {/* 左侧导航链接 */}
                             <div className="top-nav-left">
-                                {topNavLinks.map((link, index) => (
+                                {topNavLinks.map((link) => (
                                     <div
                                         key={link.key}
                                         className={`top-nav-item ${location.pathname.startsWith(link.key) && link.key !== '/' ? 'active' : ''}`}
                                         onClick={() => navigate(link.key)}
                                     >
-                                        {index === 0 && <RocketOutlined className="nav-item-icon" />}
-                                        {index === 1 && <PictureOutlined className="nav-item-icon" />}
-                                        {index === 2 && <CoffeeOutlined className="nav-item-icon" />}
+                                        {link.key === '/' && <RocketOutlined className="nav-item-icon" />}
+                                        {link.key === '/tools/image' && <PictureOutlined className="nav-item-icon" />}
+                                        {link.key === '/tools/java' && <CoffeeOutlined className="nav-item-icon" />}
                                         <span>{link.label}</span>
                                     </div>
                                 ))}
@@ -224,7 +170,7 @@ const ImageToolsLayout: React.FC = () => {
                             <Breadcrumb
                                 items={[
                                     { title: '首页', href: '/' },
-                                    { title: '图片工具', href: '/tools/image' },
+                                    { title: 'Java工具', href: '/tools/java' },
                                     { title: currentItem?.label || '当前工具' },
                                 ]}
                             />
@@ -250,4 +196,4 @@ const ImageToolsLayout: React.FC = () => {
     );
 };
 
-export default ImageToolsLayout;
+export default JavaToolsLayout;
