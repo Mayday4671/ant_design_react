@@ -1,0 +1,132 @@
+/* ================================================
+   Border Beam Component Styles - Glow Border Effect
+   发光边框效果
+   ================================================ */
+
+.border-beam {
+    position: absolute;
+    inset: -1px;
+    pointer-events: none;
+    border-radius: var(--border-beam-border-radius, 12px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* 默认不显示，悬停时才显示发光效果 */
+.tool-card:hover .border-beam {
+    opacity: 1;
+}
+
+.border-beam::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(135deg,
+            var(--border-beam-color-from, rgba(99, 102, 241, 0.8)) 0%,
+            var(--border-beam-color-to, rgba(168, 85, 247, 0.8)) 50%,
+            var(--border-beam-color-from, rgba(99, 102, 241, 0.8)) 100%);
+    background-size: 200% 200%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: glow-border-rotate var(--border-beam-duration, 3s) linear infinite;
+}
+
+/* 发光效果 */
+.border-beam::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    background: linear-gradient(135deg,
+            var(--border-beam-color-from, rgba(99, 102, 241, 0.6)),
+            var(--border-beam-color-to, rgba(168, 85, 247, 0.6)));
+    filter: blur(12px);
+    opacity: 0.8;
+    animation: glow-border-pulse var(--border-beam-duration, 3s) ease-in-out infinite;
+    z-index: -1;
+}
+
+/* 渐变旋转动画 */
+@keyframes glow-border-rotate {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* 呼吸发光动画 */
+@keyframes glow-border-pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        filter: blur(12px);
+    }
+
+    50% {
+        opacity: 1;
+        filter: blur(16px);
+    }
+}
+
+/* 悬停时增强发光效果 */
+.tool-card:hover .border-beam::after {
+    opacity: 1;
+    filter: blur(20px);
+}
+
+/* 深色模式优化 - 更明显的发光 */
+.dark-mode .border-beam::before {
+    background: linear-gradient(135deg,
+            rgba(99, 102, 241, 1) 0%,
+            rgba(168, 85, 247, 1) 50%,
+            rgba(236, 72, 153, 0.9) 100%);
+    background-size: 200% 200%;
+}
+
+.dark-mode .border-beam::after {
+    filter: blur(18px);
+    opacity: 0.9;
+}
+
+.dark-mode .tool-card:hover .border-beam::after {
+    filter: blur(24px);
+}
+
+/* 浅色模式优化 - 柔和的发光 */
+.light-mode .border-beam::before {
+    background: linear-gradient(135deg,
+            rgba(99, 102, 241, 0.9) 0%,
+            rgba(168, 85, 247, 0.8) 50%,
+            rgba(236, 72, 153, 0.7) 100%);
+    background-size: 200% 200%;
+}
+
+.light-mode .border-beam::after {
+    filter: blur(10px);
+    opacity: 0.5;
+}
+
+.light-mode .tool-card:hover .border-beam::after {
+    filter: blur(16px);
+    opacity: 0.8;
+}
+
+/* 性能优化 */
+.border-beam,
+.border-beam::before,
+.border-beam::after {
+    will-change: opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}

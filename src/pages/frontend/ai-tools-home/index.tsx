@@ -11,6 +11,7 @@ import {
     getCategories, getToolsByCategory, getHotTools, getNewTools,
     type AITool, type AICategory
 } from '../../../services/ai-tools-mock';
+import BorderBeam from '../../../components/BorderBeam';
 import '../../../assets/styles/pages/frontend/ai-tools-home.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -58,6 +59,12 @@ const ToolCard: React.FC<{ tool: AITool }> = ({ tool }) => {
     return (
         <a href={tool.url} target="_blank" rel="noopener noreferrer" className="tool-card-link">
             <Card hoverable className="tool-card" size="small">
+                <BorderBeam
+                    colorFrom="rgba(99, 102, 241, 0.8)"
+                    colorTo="rgba(168, 85, 247, 0.8)"
+                    duration={3}
+                    borderRadius={12}
+                />
                 <div className="tool-card-content">
                     <div className="tool-icon-wrapper" style={{ background: gradient }}>
                         <Avatar
